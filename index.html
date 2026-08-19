@@ -4,132 +4,334 @@
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Web - Google Apps Script</title>
-  <!-- Tailwind CSS para diseño moderno y responsive -->
+  <title>Sistema de Usuarios</title>
+  <!-- Tailwind CSS para diseño moderno -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Iconos Lucide -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
-  <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-    
-    <!-- Encabezado -->
-    <div class="bg-indigo-600 p-6 text-white text-center">
-      <h1 class="text-xl font-bold tracking-wide">Formulario de Registro / Evaluación</h1>
-      <p class="text-indigo-200 text-sm mt-1">Conectado a Google Sheets via Web App</p>
+  <!-- ========================================== -->
+  <!-- VISTA 1: INICIO DE SESIÓN                  -->
+  <!-- ========================================== -->
+  <div id="loginCard" class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700">
+    <div class="text-center mb-8">
+      <div class="inline-flex p-3 bg-indigo-600/20 text-indigo-400 rounded-xl mb-3">
+        <i data-lucide="lock" class="w-8 h-8"></i>
+      </div>
+      <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
+      <p class="text-slate-400 text-sm mt-1">Acceda al sistema de administración</p>
     </div>
 
-    <!-- Formulario -->
-    <form id="mainForm" class="p-6 space-y-4" onsubmit="handleSubmit(event)">
-      
-      <!-- Campo 1: Nombre / Estudiante -->
+    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
       <div>
-        <label for="estudiante" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nombre Completo</label>
-        <input type="text" id="estudiante" name="estudiante" required placeholder="Ej: Juan Pérez" 
-               class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition">
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Usuario</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <i data-lucide="user" class="w-5 h-5"></i>
+          </span>
+          <input type="text" id="loginUser" required placeholder="Ej: admin"
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+        </div>
       </div>
 
-      <!-- Campo 2: Curso -->
       <div>
-        <label for="curso" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Curso / Sección</label>
-        <select id="curso" name="curso" required 
-                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition bg-white">
-          <option value="" disabled selected>Selecciona un curso</option>
-          <option value="S1A">1º Secundaria A</option>
-          <option value="S1B">1º Secundaria B</option>
-          <option value="P1B">1º Primaria B</option>
-          <option value="P2B">2º Primaria B</option>
-        </select>
+        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Contraseña</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <i data-lucide="key-round" class="w-5 h-5"></i>
+          </span>
+          <input type="password" id="loginPass" required placeholder="••••••••"
+            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+        </div>
       </div>
 
-      <!-- Campo 3: Respuesta u Opción -->
-      <div>
-        <label for="respuesta" class="block text-xs font-semibold text-slate-600 uppercase mb-1">Evaluación / Respuesta</label>
-        <select id="respuesta" name="respuesta" required 
-                class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition bg-white">
-          <option value="Siempre">Siempre (2 pts)</option>
-          <option value="A veces">A veces (1 pt)</option>
-          <option value="Nunca">Nunca (0 pts)</option>
-        </select>
-      </div>
+      <div id="loginMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
 
-      <!-- Mensaje de Estado / Feedback -->
-      <div id="statusMessage" class="hidden text-center text-sm py-2 px-3 rounded-lg"></div>
-
-      <!-- Botón Enviar -->
-      <button type="submit" id="btnSubmit" 
-              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
-        <span>Enviar Registro</span>
+      <button type="submit" id="btnLogin"
+        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+        <span>Ingresar</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
-
     </form>
   </div>
 
-  <script>
-    function handleSubmit(e) {
-      e.preventDefault();
-      
-      const btn = document.getElementById('btnSubmit');
-      const status = document.getElementById('statusMessage');
-      
-      // Bloquear botón y mostrar spinner/texto
-      btn.disabled = true;
-      btn.innerHTML = `<span class="animate-spin">⏳</span> Procesando...`;
-      status.classList.add('hidden');
 
-      const formData = {
-        estudiante: document.getElementById('estudiante').value,
-        curso: document.getElementById('curso').value,
-        respuesta: document.getElementById('respuesta').value,
-        fecha: new Date().toLocaleString()
+  <!-- ========================================== -->
+  <!-- VISTA 2: PANEL DE ADMINISTRACIÓN / USUARIOS -->
+  <!-- ========================================== -->
+  <div id="adminPanel" class="hidden max-w-4xl w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+    
+    <!-- Barra Superior -->
+    <div class="bg-slate-900/60 p-6 border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <i data-lucide="users" class="text-indigo-400"></i> Gestor de Usuarios
+        </h2>
+        <p class="text-slate-400 text-xs mt-1">Conectado a Google Sheets</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button onclick="openModal()" 
+          class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition shadow">
+          <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Usuario
+        </button>
+        <button onclick="logout()" 
+          class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-2 rounded-xl text-sm font-semibold transition">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <div class="p-6 overflow-x-auto">
+      <table class="w-full text-left text-sm text-slate-300">
+        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase tracking-wider">
+          <tr>
+            <th class="p-3 rounded-l-lg">Nombre</th>
+            <th class="p-3">Usuario</th>
+            <th class="p-3">Rol</th>
+            <th class="p-3">Estado</th>
+            <th class="p-3 rounded-r-lg text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody" class="divide-y divide-slate-700/50">
+          <tr>
+            <td colspan="5" class="p-8 text-center text-slate-500">Cargando lista de usuarios...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: AGREGAR NUEVO USUARIO               -->
+  <!-- ========================================== -->
+  <div id="userModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+          <i data-lucide="user-plus" class="text-indigo-400"></i> Registrar Usuario
+        </h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="newUserForm" onsubmit="handleCreateUser(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nombre Completo</label>
+          <input type="text" id="newNombre" required placeholder="Ej: Juan Pérez"
+            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Usuario</label>
+          <input type="text" id="newUsuario" required placeholder="Ej: jperez"
+            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Contraseña</label>
+          <input type="password" id="newPassword" required placeholder="••••••••"
+            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Rol</label>
+            <select id="newRol" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+              <option value="usuario">Usuario</option>
+              <option value="administrador">Administrador</option>
+              <option value="profesor">Profesor</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Estado</label>
+            <select id="newEstado" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+              <option value="activo">Activo</option>
+              <option value="inactivo">Inactivo</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="modalMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
+
+        <div class="flex justify-end gap-3 pt-4">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-700 text-slate-300 rounded-xl text-sm hover:bg-slate-600 transition">Cancelar</button>
+          <button type="submit" id="btnSaveUser" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-500 transition">Guardar Usuario</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- LÓGICA DE JAVASCRIPT                       -->
+  <!-- ========================================== -->
+  <script>
+    let usuariosLista = [];
+
+    // Inicializar Iconos Lucide
+    document.addEventListener("DOMContentLoaded", () => {
+      lucide.createIcons();
+    });
+
+    // 1. Manejo del Login
+    function handleLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('loginUser').value.trim();
+      const pass = document.getElementById('loginPass').value.trim();
+      const btn = document.getElementById('btnLogin');
+      const msg = document.getElementById('loginMsg');
+
+      btn.disabled = true;
+      btn.innerHTML = `<span>Validando...</span>`;
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.exito) {
+            usuariosLista = res.datos;
+            const usuarioValido = usuariosLista.find(u => 
+              u.usuario.toString().toLowerCase() === user.toLowerCase() && 
+              u.password.toString() === pass &&
+              u.estado.toString().toLowerCase() === 'activo'
+            );
+
+            if (usuarioValido) {
+              document.getElementById('loginCard').classList.add('hidden');
+              document.getElementById('adminPanel').classList.remove('hidden');
+              renderUsersTable();
+            } else {
+              showError(msg, "Usuario/Contraseña incorrectos o cuenta inactiva.");
+              btn.disabled = false;
+              btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+              lucide.createIcons();
+            }
+          } else {
+            showError(msg, "Error de conexión con la hoja: " + res.mensaje);
+            btn.disabled = false;
+            btn.innerHTML = `<span>Ingresar</span>`;
+          }
+        })
+        .obtenerUsuarios();
+    }
+
+    // 2. Renderizar Tabla de Usuarios
+    function renderUsersTable() {
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+
+      if (usuariosLista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No hay usuarios registrados.</td></tr>`;
+        return;
+      }
+
+      usuariosLista.forEach(u => {
+        const isActivo = u.estado.toString().toLowerCase() === 'activo';
+        const badgeEstado = isActivo 
+          ? `<span class="bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full text-xs font-semibold">Activo</span>`
+          : `<span class="bg-rose-500/20 text-rose-400 px-2.5 py-1 rounded-full text-xs font-semibold">Inactivo</span>`;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-700/30 transition";
+        tr.innerHTML = `
+          <td class="p-3 font-medium text-white">${u.nombre}</td>
+          <td class="p-3 text-slate-400">${u.usuario}</td>
+          <td class="p-3 capitalize">${u.rol}</td>
+          <td class="p-3">${badgeEstado}</td>
+          <td class="p-3 text-center">
+            <button onclick="toggleEstado(${u.fila}, '${isActivo ? 'inactivo' : 'activo'}')" 
+              class="text-xs px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition">
+              ${isActivo ? 'Desactivar' : 'Activar'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 3. Crear Usuario Nuevo
+    function handleCreateUser(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveUser');
+      const msg = document.getElementById('modalMsg');
+
+      const nuevoData = {
+        nombre: document.getElementById('newNombre').value.trim(),
+        usuario: document.getElementById('newUsuario').value.trim(),
+        password: document.getElementById('newPassword').value.trim(),
+        rol: document.getElementById('newRol').value,
+        estado: document.getElementById('newEstado').value
       };
 
-      // Si ejecutas desde Apps Script directamente:
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler((response) => {
-            showSuccess("¡Enviado con éxito!");
-            document.getElementById('mainForm').reset();
-          })
-          .withFailureHandler((error) => {
-            showError("Error al enviar: " + error.message);
-          })
-          .procesarFormulario(formData); // Nombre de la función en tu Code.gs
-      } else {
-        // En caso de consumir el endpoint vía FETCH / POST
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbysLbhfmJy5CfLJQJpmoIpNCvP_e4C5eUm6Ol6-Ni4oMMsZ2h4mfGKcwUgeo6fkCzkSVw/exec";
-        
-        fetch(WEB_APP_URL, {
-          method: 'POST',
-          mode: 'no-cors', // Requerido para Web Apps de Apps Script si no hay CORS explicito
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        })
-        .then(() => {
-          showSuccess("¡Formulario enviado correctamente!");
-          document.getElementById('mainForm').reset();
-        })
-        .catch(err => {
-          showError("Error en la conexión: " + err);
-        })
-        .finally(() => {
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.exito) {
+            closeModal();
+            document.getElementById('newUserForm').reset();
+            // Recargar lista actualizada
+            google.script.run
+              .withSuccessHandler(dataRes => {
+                if(dataRes.exito) {
+                  usuariosLista = dataRes.datos;
+                  renderUsersTable();
+                }
+              })
+              .obtenerUsuarios();
+          } else {
+            showError(msg, res.mensaje);
+          }
           btn.disabled = false;
-          btn.innerHTML = "Enviar Registro";
-        });
-      }
+          btn.innerText = "Guardar Usuario";
+        })
+        .guardarUsuario(nuevoData);
+    }
 
-      function showSuccess(msg) {
-        status.className = "text-center text-sm py-2 px-3 rounded-lg bg-emerald-100 text-emerald-800 font-medium block";
-        status.textContent = msg;
-        btn.disabled = false;
-        btn.innerHTML = "Enviar Registro";
-      }
+    // 4. Cambiar Estado (Activo / Inactivo)
+    function toggleEstado(fila, nuevoEstado) {
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.exito) {
+            google.script.run
+              .withSuccessHandler(dataRes => {
+                if(dataRes.exito) {
+                  usuariosLista = dataRes.datos;
+                  renderUsersTable();
+                }
+              })
+              .obtenerUsuarios();
+          }
+        })
+        .cambiarEstadoUsuario(fila, nuevoEstado);
+    }
 
-      function showError(msg) {
-        status.className = "text-center text-sm py-2 px-3 rounded-lg bg-rose-100 text-rose-800 font-medium block";
-        status.textContent = msg;
-        btn.disabled = false;
-        btn.innerHTML = "Enviar Registro";
-      }
+    // Funciones Auxiliares
+    function openModal() {
+      document.getElementById('userModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('userModal').classList.add('hidden');
+      document.getElementById('modalMsg').classList.add('hidden');
+    }
+
+    function logout() {
+      document.getElementById('adminPanel').classList.add('hidden');
+      document.getElementById('loginCard').classList.remove('hidden');
+      document.getElementById('loginForm').reset();
+    }
+
+    function showError(element, mensaje) {
+      element.className = "text-xs text-center p-3 rounded-lg bg-rose-500/20 text-rose-300 font-medium border border-rose-500/30 block";
+      element.innerText = mensaje;
     }
   </script>
 </body>
