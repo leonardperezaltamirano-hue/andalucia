@@ -1,401 +1,201 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Usuarios</title>
-  <!-- Tailwind CSS para diseño moderno -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Iconos Lucide -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Registro de Usuarios</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .card h2 {
+      margin-bottom: 20px;
+      color: #333333;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555555;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #007bff;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .exito {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+<body>
 
-  <div class="max-w-2xl w-full space-y-4">
-    
-    <!-- ========================================== -->
-    <!-- VISTA 1: INICIO DE SESIÓN                  -->
-    <!-- ========================================== -->
-    <div id="loginCard" class="max-w-md mx-auto bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700">
-      <div class="text-center mb-8">
-        <div class="inline-flex p-3 bg-indigo-600/20 text-indigo-400 rounded-xl mb-3">
-          <i data-lucide="lock" class="w-8 h-8"></i>
-        </div>
-        <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
-        <p class="text-slate-400 text-sm mt-1">Acceso al Sistema</p>
-      </div>
-
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Usuario</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-              <i data-lucide="user" class="w-5 h-5"></i>
-            </span>
-            <input type="text" id="loginUser" required placeholder="Ej: admin"
-              class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Contraseña</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-              <i data-lucide="key-round" class="w-5 h-5"></i>
-            </span>
-            <input type="password" id="loginPass" required placeholder="••••••••"
-              class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-          </div>
-        </div>
-
-        <div id="loginMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
-
-        <button type="submit" id="btnLogin"
-          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-          <span>Ingresar</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
-      </form>
-
-      <!-- BOTÓN ADMIN INFERIOR -->
-      <div class="mt-6 pt-6 border-t border-slate-700/60 text-center">
-        <button onclick="openAdminPrompt()" type="button"
-          class="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-indigo-400 transition py-2 px-3 rounded-lg hover:bg-slate-700/50">
-          <i data-lucide="shield-check" class="w-4 h-4"></i> Acceso Admin
-        </button>
-      </div>
-    </div>
-
-
-    <!-- ========================================== -->
-    <!-- PANEL DE ADMINISTRACIÓN / GESTIÓN          -->
-    <!-- ========================================== -->
-    <div id="adminPanel" class="hidden bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+  <div class="card">
+    <h2>Crear Usuario</h2>
+    <form id="userForm">
       
-      <!-- Encabezado Admin -->
-      <div class="bg-slate-900/80 p-5 border-b border-slate-700 flex items-center justify-between">
-        <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
-            <i data-lucide="shield" class="text-indigo-400 w-5 h-5"></i> Panel de Administración
-          </h2>
-          <p class="text-slate-400 text-xs mt-0.5">Gestión directa en Google Sheets</p>
-        </div>
-        <button onclick="closeAdminPanel()" class="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl border border-slate-700">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
+      <div class="form-group">
+        <label for="nombre">Nombre Completo</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
       </div>
 
-      <div class="p-6 space-y-6">
-        <!-- FORMULARIO CREAR USUARIO -->
-        <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/60">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3 flex items-center gap-1.5">
-            <i data-lucide="user-plus" class="w-4 h-4"></i> Registrar Nuevo Usuario
-          </h3>
-
-          <form id="adminUserForm" onsubmit="handleCreateUserAdmin(event)" class="space-y-3">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Nombre Completo</label>
-                <input type="text" id="admNombre" required placeholder="Ej: Juan Pérez"
-                  class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-indigo-500">
-              </div>
-
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Usuario</label>
-                <input type="text" id="admUsuario" required placeholder="Ej: jperez"
-                  class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-indigo-500">
-              </div>
-
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Contraseña</label>
-                <input type="text" id="admPassword" required placeholder="••••••••"
-                  class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-indigo-500">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Rol</label>
-                <select id="admRol" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-indigo-500">
-                  <option value="usuario">Usuario</option>
-                  <option value="administrador">Administrador</option>
-                  <option value="profesor">Profesor</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-xs text-slate-400 mb-1">Estado Inicial</label>
-                <select id="admEstado" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none focus:border-indigo-500">
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
-                </select>
-              </div>
-            </div>
-
-            <div id="admMsg" class="hidden text-xs text-center p-2.5 rounded-lg"></div>
-
-            <button type="submit" id="btnAdmSave" 
-              class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 rounded-lg text-xs transition flex items-center justify-center gap-2">
-              <i data-lucide="save" class="w-4 h-4"></i> Guardar Usuario
-            </button>
-          </form>
-        </div>
-
-        <!-- TABLA DE MODIFICACIÓN DE USUARIOS -->
-        <div>
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="users" class="w-4 h-4"></i> Lista y Modificación
-            </h3>
-            <button onclick="cargarTablaUsuarios()" class="text-xs text-indigo-400 hover:underline flex items-center gap-1">
-              <i data-lucide="refresh-cw" class="w-3 h-3"></i> Actualizar
-            </button>
-          </div>
-
-          <div class="overflow-x-auto border border-slate-700/60 rounded-xl">
-            <table class="w-full text-left text-xs text-slate-300">
-              <thead class="bg-slate-900 text-slate-400 uppercase">
-                <tr>
-                  <th class="p-3">Nombre</th>
-                  <th class="p-3">Usuario</th>
-                  <th class="p-3">Rol</th>
-                  <th class="p-3">Estado</th>
-                  <th class="p-3 text-center">Modificar</th>
-                </tr>
-              </thead>
-              <tbody id="usersTableBody" class="divide-y divide-slate-700/50 bg-slate-900/30">
-                <tr>
-                  <td colspan="5" class="p-6 text-center text-slate-500">Cargando usuarios...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+      <div class="form-group">
+        <label for="usuario">Nombre de Usuario</label>
+        <input type="text" id="usuario" name="usuario" placeholder="Ej. jperez" required>
       </div>
-    </div>
 
+      <div class="form-group">
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+      </div>
+
+      <div class="form-group">
+        <label for="rol">Rol del Usuario</label>
+        <select id="rol" name="rol" required>
+          <option value="" disabled selected>Selecciona un rol</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Editor">Editor</option>
+          <option value="Usuario">Usuario Estándar</option>
+        </select>
+      </div>
+
+      <button type="submit" id="btnSubmit">Registrar Usuario</button>
+    </form>
+
+    <div id="mensaje"></div>
   </div>
 
-
-  <!-- ========================================== -->
-  <!-- MODAL AUTENTICACIÓN ADMIN                  -->
-  <!-- ========================================== -->
-  <div id="adminPassModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
-      <div class="text-center mb-4">
-        <i data-lucide="key" class="w-8 h-8 text-indigo-400 mx-auto mb-2"></i>
-        <h3 class="text-lg font-bold text-white">Autenticación Requerida</h3>
-        <p class="text-xs text-slate-400 mt-1">Ingresa la clave maestra adminroot</p>
-      </div>
-
-      <form onsubmit="verifyAdminPass(event)" class="space-y-4">
-        <input type="password" id="adminSecretKey" placeholder="Clave admin" required
-          class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-center text-sm focus:outline-none focus:border-indigo-500">
-        
-        <div id="passModalMsg" class="hidden text-xs text-center p-2 rounded-lg bg-rose-500/20 text-rose-300"></div>
-
-        <div class="flex gap-2">
-          <button type="button" onclick="closeAdminPassModal()" class="w-1/2 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-xs font-semibold">Cancelar</button>
-          <button type="submit" class="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">Verificar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-
-  <!-- ========================================== -->
-  <!-- JAVASCRIPT                                 -->
-  <!-- ========================================== -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      lucide.createIcons();
-    });
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe6Jk7O0tlSrf9sewWOMHNEs-lLdLjJZR5Wi_UFkXBMSGL30ictsGTV43HSJJrphflfA/exec";
 
-    // 1. Abrir/Cerrar Modal Clave Admin
-    function openAdminPrompt() {
-      document.getElementById('adminSecretKey').value = '';
-      document.getElementById('passModalMsg').classList.add('hidden');
-      document.getElementById('adminPassModal').classList.remove('hidden');
-    }
+    const form = document.getElementById('userForm');
+    const mensajeDiv = document.getElementById('mensaje');
+    const btnSubmit = document.getElementById('btnSubmit');
 
-    function closeAdminPassModal() {
-      document.getElementById('adminPassModal').classList.add('hidden');
-    }
-
-    // 2. Verificar Contraseña Admin (`adminroot`)
-    function verifyAdminPass(e) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const pass = document.getElementById('adminSecretKey').value;
-      const msg = document.getElementById('passModalMsg');
 
-      if (pass === 'adminroot') {
-        closeAdminPassModal();
-        document.getElementById('loginCard').classList.add('hidden');
-        document.getElementById('adminPanel').classList.remove('hidden');
-        cargarTablaUsuarios();
-        lucide.createIcons();
-      } else {
-        msg.innerText = "Contraseña incorrecta";
-        msg.classList.remove('hidden');
-      }
-    }
+      // Bloquear botón y mostrar estado de carga
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = "Registrando...";
+      mensajeDiv.style.display = "none";
 
-    function closeAdminPanel() {
-      document.getElementById('adminPanel').classList.add('hidden');
-      document.getElementById('loginCard').classList.remove('hidden');
-      document.getElementById('adminUserForm').reset();
-    }
-
-    // 3. Cargar y Renderizar Tabla de Usuarios desde Google Sheets
-    function cargarTablaUsuarios() {
-      const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Cargando usuarios...</td></tr>`;
-
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res && res.exito) {
-            tbody.innerHTML = '';
-            if (res.datos.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No hay usuarios en la hoja.</td></tr>`;
-              return;
-            }
-
-            res.datos.forEach(u => {
-              const isActivo = u.estado.toString().toLowerCase() === 'activo';
-              const tr = document.createElement('tr');
-              tr.className = "hover:bg-slate-800/50 transition";
-              tr.innerHTML = `
-                <td class="p-3 font-medium text-white">${u.nombre}</td>
-                <td class="p-3 text-slate-400">${u.usuario}</td>
-                <td class="p-3 capitalize">${u.rol}</td>
-                <td class="p-3">
-                  <span class="${isActivo ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'} px-2 py-0.5 rounded-full text-[10px] font-semibold">
-                    ${u.estado}
-                  </span>
-                </td>
-                <td class="p-3 text-center">
-                  <button onclick="toggleEstado(${u.fila}, '${isActivo ? 'inactivo' : 'activo'}')" 
-                    class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
-                    ${isActivo ? 'Desactivar' : 'Activar'}
-                  </button>
-                </td>
-              `;
-              tbody.appendChild(tr);
-            });
-          } else {
-            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-400">Error: ${res ? res.mensaje : 'Desconocido'}</td></tr>`;
-          }
-        })
-        .withFailureHandler(err => {
-          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-400">Error en el servidor: ${err}</td></tr>`;
-        })
-        .obtenerUsuarios();
-    }
-
-    // 4. Modificar Estado del Usuario (Activo / Inactivo)
-    function toggleEstado(fila, nuevoEstado) {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res && res.exito) {
-            cargarTablaUsuarios();
-          } else {
-            alert("Error al cambiar estado: " + (res ? res.mensaje : 'Error de comunicación'));
-          }
-        })
-        .cambiarEstadoUsuario(fila, nuevoEstado);
-    }
-
-    // 5. Crear Usuario Nuevo desde Admin
-    function handleCreateUserAdmin(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnAdmSave');
-      const msg = document.getElementById('admMsg');
-
-      const nuevoData = {
-        nombre: document.getElementById('admNombre').value.trim(),
-        usuario: document.getElementById('admUsuario').value.trim(),
-        password: document.getElementById('admPassword').value.trim(),
-        rol: document.getElementById('admRol').value,
-        estado: document.getElementById('admEstado').value
+      // Recopilar los datos ingresados
+      const formData = {
+        nombre: document.getElementById('nombre').value,
+        usuario: document.getElementById('usuario').value,
+        contrasena: document.getElementById('contrasena').value,
+        rol: document.getElementById('rol').value
       };
 
-      btn.disabled = true;
-      btn.innerText = "Guardando en Google Sheets...";
+      // Enviar datos mediante la API a Google Apps Script
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(() => {
+        mostrarMensaje("¡Usuario registrado con éxito en Google Drive!", "exito");
+        form.reset();
+      })
+      .catch(error => {
+        mostrarMensaje("Ocurrió un error al guardar el usuario.", "error");
+        console.error("Error:", error);
+      })
+      .finally(() => {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = "Registrar Usuario";
+      });
+    });
 
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res && res.exito) {
-            showSuccess(msg, "¡Usuario agregado correctamente a la hoja!");
-            document.getElementById('adminUserForm').reset();
-            cargarTablaUsuarios();
-          } else {
-            showError(msg, "Error: " + (res ? res.mensaje : 'Sin respuesta'));
-          }
-          btn.disabled = false;
-          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar Usuario`;
-          lucide.createIcons();
-        })
-        .withFailureHandler(err => {
-          showError(msg, "Error crítico: " + err);
-          btn.disabled = false;
-          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar Usuario`;
-          lucide.createIcons();
-        })
-        .guardarUsuario(nuevoData);
-    }
-
-    // 6. Login Estándar
-    function handleLogin(e) {
-      e.preventDefault();
-      const user = document.getElementById('loginUser').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-      const btn = document.getElementById('btnLogin');
-      const msg = document.getElementById('loginMsg');
-
-      btn.disabled = true;
-      btn.innerText = "Validando...";
-
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res && res.exito) {
-            const usuarioValido = res.datos.find(u => 
-              u.usuario.toString().toLowerCase() === user.toLowerCase() && 
-              u.password.toString() === pass &&
-              u.estado.toString().toLowerCase() === 'activo'
-            );
-
-            if (usuarioValido) {
-              showSuccess(msg, "¡Acceso concedido! Bienvenido " + usuarioValido.nombre);
-            } else {
-              showError(msg, "Usuario o contraseña incorrectos, o cuenta inactiva.");
-            }
-          } else {
-            showError(msg, "Error al consultar la hoja: " + (res ? res.mensaje : ''));
-          }
-          btn.disabled = false;
-          btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-          lucide.createIcons();
-        })
-        .withFailureHandler(err => {
-          showError(msg, "Error de comunicación: " + err);
-          btn.disabled = false;
-          btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-          lucide.createIcons();
-        })
-        .obtenerUsuarios();
-    }
-
-    function showSuccess(el, texto) {
-      el.className = "text-xs text-center p-2.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30 block";
-      el.innerText = texto;
-    }
-
-    function showError(el, texto) {
-      el.className = "text-xs text-center p-2.5 rounded-lg bg-rose-500/20 text-rose-300 font-medium border border-rose-500/30 block";
-      el.innerText = texto;
+    function mostrarMensaje(texto, tipo) {
+      mensajeDiv.textContent = texto;
+      mensajeDiv.className = tipo;
+      mensajeDiv.style.display = "block";
     }
   </script>
+
 </body>
 </html>
