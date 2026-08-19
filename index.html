@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Acceso al Sistema</title>
+  <title>Sistema Académico y Gestión de Usuarios</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,13 +21,17 @@
       padding: 20px;
     }
 
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+
     .card {
       background: #ffffff;
       padding: 30px;
       border-radius: 10px;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 400px;
       margin-bottom: 10px;
     }
 
@@ -129,18 +133,43 @@
       display: none !important;
     }
 
-    .user-profile {
-      text-align: center;
+    /* Estilos del Módulo Académico */
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #007bff;
     }
 
-    .user-profile h3 {
-      color: #28a745;
-      margin-bottom: 10px;
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: #e9ecef;
+      border: none;
+      color: #333;
+      font-weight: 600;
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
     }
 
-    .user-profile p {
-      margin-bottom: 8px;
-      color: #555;
+    .tab-btn.activo {
+      background: #007bff;
+      color: white;
+    }
+
+    .header-user {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #eef2f7;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .header-user span {
+      font-weight: bold;
+      color: #007bff;
     }
   </style>
 </head>
@@ -170,18 +199,80 @@
       <hr style="margin-top: 20px; border: 0; border-top: 1px solid #eee;">
       
       <!-- BOTÓN DE ACCESO ADMIN -->
-      <button type="button" class="btn-admin" onclick="mostrarModalAdmin()">Panel Admin (Registrar)</button>
+      <button type="button" class="btn-admin" onclick="mostrarModalAdmin()">Panel Admin (Registrar Usuarios)</button>
     </div>
 
-    <!-- SECCIÓN 2: BIENVENIDA (LUEGO DE LOGUEARSE) -->
-    <div id="sec-bienvenida" class="card oculto">
-      <div class="user-profile">
-        <h3>¡Bienvenido al Sistema!</h3>
-        <p><strong>Nombre:</strong> <span id="profileNombre"></span></p>
-        <p><strong>Usuario:</strong> <span id="profileUsuario"></span></p>
-        <p><strong>Rol:</strong> <span id="profileRol"></span></p>
-        <button class="btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
+    <!-- SECCIÓN 2: SISTEMA ACADÉMICO (LUEGO DE LOGUEARSE) -->
+    <div id="sec-academico" class="card oculto">
+      <div class="header-user">
+        <div>Bienvenido: <span id="userLogueado"></span> (<small id="rolLogueado"></small>)</div>
+        <button onclick="cerrarSesion()" style="width: auto; padding: 5px 10px; font-size: 12px; background: #dc3545;">Salir</button>
       </div>
+
+      <h2>Gestión Académica</h2>
+
+      <!-- Pestañas del Sistema -->
+      <div class="tabs">
+        <button type="button" class="tab-btn activo" onclick="cambiarTab('cursos')">Cursos</button>
+        <button type="button" class="tab-btn" onclick="cambiarTab('estudiantes')">Estudiantes</button>
+        <button type="button" class="tab-btn" onclick="cambiarTab('evaluacion')">Evaluación</button>
+      </div>
+
+      <!-- TAB 1: REGISTRAR CURSO -->
+      <form id="formCurso" class="tab-content">
+        <div class="form-group">
+          <label for="cursoNombre">Nombre del Curso / Grado</label>
+          <input type="text" id="cursoNombre" placeholder="Ej. 1ro de Secundaria 'A'" required>
+        </div>
+        <div class="form-group">
+          <label for="materiaNombre">Materia / Área</label>
+          <input type="text" id="materiaNombre" placeholder="Ej. Técnica Tecnológica / Robótica" required>
+        </div>
+        <div class="form-group">
+          <label for="cursoEstado">Estado</label>
+          <select id="cursoEstado" required>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </div>
+        <button type="submit">Guardar Curso</button>
+      </form>
+
+      <!-- TAB 2: REGISTRAR ESTUDIANTE -->
+      <form id="formEstudiante" class="tab-content oculto">
+        <div class="form-group">
+          <label for="estNombre">Nombre del Estudiante</label>
+          <input type="text" id="estNombre" placeholder="Ej. Mateo Morales" required>
+        </div>
+        <div class="form-group">
+          <label for="estCurso">Curso Asignado</label>
+          <input type="text" id="estCurso" placeholder="Ej. 1ro de Secundaria 'A'" required>
+        </div>
+        <div class="form-group">
+          <label for="estCarnet">C.I. / Código Estudiante</label>
+          <input type="text" id="estCarnet" placeholder="Ej. 8765432" required>
+        </div>
+        <button type="submit">Guardar Estudiante</button>
+      </form>
+
+      <!-- TAB 3: EVALUACIÓN CONTINUA -->
+      <form id="formEvaluacion" class="tab-content oculto">
+        <div class="form-group">
+          <label for="evalEstudiante">Estudiante / Curso</label>
+          <input type="text" id="evalEstudiante" placeholder="Ej. Mateo Morales - 1ro A" required>
+        </div>
+        <div class="form-group">
+          <label for="evalCriterio">Criterio / Actividad (Dimensiones)</label>
+          <input type="text" id="evalCriterio" placeholder="Ej. Práctica Arduino / Ser y Hacer" required>
+        </div>
+        <div class="form-group">
+          <label for="evalNota">Puntaje / Nota (1 - 100)</label>
+          <input type="number" id="evalNota" min="1" max="100" placeholder="Ej. 85" required>
+        </div>
+        <button type="submit">Registrar Evaluación</button>
+      </form>
+
+      <div id="msgAcademico" class="mensaje"></div>
     </div>
 
     <!-- SECCIÓN 3: MODAL CONTRASEÑA ADMIN -->
@@ -200,16 +291,16 @@
 
     <!-- SECCIÓN 4: FORMULARIO REGISTRAR NUEVO USUARIO -->
     <div id="sec-registro" class="card oculto">
-      <h2>Registrar Usuario</h2>
+      <h2>Registrar Nuevo Usuario</h2>
       <form id="formRegistro">
         <div class="form-group">
           <label for="nombre">Nombre Completo</label>
-          <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+          <input type="text" id="nombre" name="nombre" placeholder="Ej. Leonar Pérez" required>
         </div>
 
         <div class="form-group">
           <label for="usuario">Nombre de Usuario</label>
-          <input type="text" id="usuario" name="usuario" placeholder="Ej. jperez" required>
+          <input type="text" id="usuario" name="usuario" placeholder="Ej. lperez" required>
         </div>
 
         <div class="form-group">
@@ -222,12 +313,12 @@
           <select id="rol" name="rol" required>
             <option value="" disabled selected>Selecciona un rol</option>
             <option value="Administrador">Administrador</option>
-            <option value="Editor">Editor</option>
+            <option value="Docente">Docente / Profesor</option>
             <option value="Usuario">Usuario Estándar</option>
           </select>
         </div>
 
-        <button type="submit" id="btnRegister">Guardar Usuario</button>
+        <button type="submit" id="btnRegister">Guardar Usuario y Crear Hoja</button>
         <button type="button" class="btn-secondary" onclick="salirAdmin()">Volver al Login</button>
       </form>
 
@@ -237,12 +328,15 @@
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCkd0XKWamXc9hPjHLwXYFl25FKtCtAXDmyPv2R9LBcZMRfAeuXxCd7fEZgZsqBR0R/exec";
+    // URL DE APPS SCRIPT ACTUALIZADA
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8MLwmGwY4_GIsVIYJ9nU9v5wpn_TTjJW8g886N3xWo1oRFqzJkw-dqrqQqrqT8iXf/exec";
     const CLAVE_ADMIN_REQUERIDA = "adminroot";
+
+    let usuarioActual = null;
 
     // Vistas
     const secLogin = document.getElementById('sec-login');
-    const secBienvenida = document.getElementById('sec-bienvenida');
+    const secAcademico = document.getElementById('sec-academico');
     const secAdminPass = document.getElementById('sec-admin-pass');
     const secRegistro = document.getElementById('sec-registro');
 
@@ -261,24 +355,21 @@
       btnLogin.textContent = "Verificando...";
       ocultarMensaje(msgLogin);
 
-      // Consultar la hoja de cálculo
       fetch(APPS_SCRIPT_URL)
         .then(response => response.json())
         .then(usuarios => {
-          // Buscar coincidencias
           const usuarioEncontrado = usuarios.find(u => 
             String(u.usuario).toLowerCase() === userVal.toLowerCase() && 
             String(u.contrasena) === passVal
           );
 
           if (usuarioEncontrado) {
-            // Éxito: Mostrar perfil
-            document.getElementById('profileNombre').textContent = usuarioEncontrado.nombre;
-            document.getElementById('profileUsuario').textContent = usuarioEncontrado.usuario;
-            document.getElementById('profileRol').textContent = usuarioEncontrado.rol;
+            usuarioActual = usuarioEncontrado;
+            document.getElementById('userLogueado').textContent = usuarioEncontrado.nombre;
+            document.getElementById('rolLogueado').textContent = usuarioEncontrado.rol;
 
             secLogin.classList.add('oculto');
-            secBienvenida.classList.remove('oculto');
+            secAcademico.classList.remove('oculto');
             document.getElementById('formLogin').reset();
           } else {
             mostrarMensaje(msgLogin, "Usuario o contraseña incorrectos.", "error");
@@ -295,12 +386,95 @@
     });
 
     function cerrarSesion() {
-      secBienvenida.classList.add('oculto');
+      usuarioActual = null;
+      secAcademico.classList.add('oculto');
       secLogin.classList.remove('oculto');
     }
 
     // -------------------------------------------------------------
-    // 2. ACCESO ADMIN CON CLAVE "adminroot"
+    // 2. CAMBIO DE PESTAÑAS (SISTEMA ACADÉMICO)
+    // -------------------------------------------------------------
+    function cambiarTab(tab) {
+      const tabsBtn = document.querySelectorAll('.tab-btn');
+      tabsBtn.forEach(btn => btn.classList.remove('activo'));
+
+      document.getElementById('formCurso').classList.add('oculto');
+      document.getElementById('formEstudiante').classList.add('oculto');
+      document.getElementById('formEvaluacion').classList.add('oculto');
+
+      if(tab === 'cursos') {
+        tabsBtn[0].classList.add('activo');
+        document.getElementById('formCurso').classList.remove('oculto');
+      } else if(tab === 'estudiantes') {
+        tabsBtn[1].classList.add('activo');
+        document.getElementById('formEstudiante').classList.remove('oculto');
+      } else if(tab === 'evaluacion') {
+        tabsBtn[2].classList.add('activo');
+        document.getElementById('formEvaluacion').classList.remove('oculto');
+      }
+    }
+
+    // Guardar Cursos
+    document.getElementById('formCurso').addEventListener('submit', function(e) {
+      e.preventDefault();
+      guardarEnHojaUsuario({
+        action: "guardarAcademico",
+        nombreDocente: usuarioActual.nombre,
+        tipo: "CURSO",
+        campo1: document.getElementById('cursoNombre').value,
+        campo2: document.getElementById('materiaNombre').value,
+        campo3: document.getElementById('cursoEstado').value
+      }, this);
+    });
+
+    // Guardar Estudiantes
+    document.getElementById('formEstudiante').addEventListener('submit', function(e) {
+      e.preventDefault();
+      guardarEnHojaUsuario({
+        action: "guardarAcademico",
+        nombreDocente: usuarioActual.nombre,
+        tipo: "ESTUDIANTE",
+        campo1: document.getElementById('estNombre').value,
+        campo2: document.getElementById('estCurso').value,
+        campo3: document.getElementById('estCarnet').value
+      }, this);
+    });
+
+    // Guardar Evaluación
+    document.getElementById('formEvaluacion').addEventListener('submit', function(e) {
+      e.preventDefault();
+      guardarEnHojaUsuario({
+        action: "guardarAcademico",
+        nombreDocente: usuarioActual.nombre,
+        tipo: "EVALUACION",
+        campo1: document.getElementById('evalEstudiante').value,
+        campo2: document.getElementById('evalCriterio').value,
+        campo3: document.getElementById('evalNota').value
+      }, this);
+    });
+
+    function guardarEnHojaUsuario(data, formElem) {
+      const msgAcademico = document.getElementById('msgAcademico');
+      ocultarMensaje(msgAcademico);
+
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(() => {
+        mostrarMensaje(msgAcademico, "¡Registro guardado con éxito en tu hoja de cálculo!", "exito");
+        formElem.reset();
+      })
+      .catch(err => {
+        mostrarMensaje(msgAcademico, "Ocurrió un error al guardar el registro.", "error");
+        console.error(err);
+      });
+    }
+
+    // -------------------------------------------------------------
+    // 3. ACCESO ADMIN CON CLAVE "adminroot"
     // -------------------------------------------------------------
     function mostrarModalAdmin() {
       secLogin.classList.add('oculto');
@@ -320,7 +494,6 @@
       const msgAdminKey = document.getElementById('msgAdminKey');
 
       if (inputKey === CLAVE_ADMIN_REQUERIDA) {
-        // Clave correcta -> Ir a Registro
         secAdminPass.classList.add('oculto');
         secRegistro.classList.remove('oculto');
         document.getElementById('formAdminAuth').reset();
@@ -338,7 +511,7 @@
     }
 
     // -------------------------------------------------------------
-    // 3. REGISTRO DE NUEVO USUARIO
+    // 4. REGISTRO DE NUEVO USUARIO Y HOJA INDIVIDUAL
     // -------------------------------------------------------------
     document.getElementById('formRegistro').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -351,6 +524,7 @@
       ocultarMensaje(msgRegister);
 
       const formData = {
+        action: "register",
         nombre: document.getElementById('nombre').value,
         usuario: document.getElementById('usuario').value,
         contrasena: document.getElementById('contrasena').value,
@@ -364,20 +538,20 @@
         body: JSON.stringify(formData)
       })
       .then(() => {
-        mostrarMensaje(msgRegister, "¡Usuario registrado correctamente!", "exito");
+        mostrarMensaje(msgRegister, "¡Usuario y hoja individual creados correctamente!", "exito");
         document.getElementById('formRegistro').reset();
       })
       .catch(error => {
-        mostrarMensaje(msgRegister, "Ocurrió un error al guardar.", "error");
+        mostrarMensaje(msgRegister, "Ocurrió un error al registrar el usuario.", "error");
         console.error(error);
       })
       .finally(() => {
         btnRegister.disabled = false;
-        btnRegister.textContent = "Guardar Usuario";
+        btnRegister.textContent = "Guardar Usuario y Crear Hoja";
       });
     });
 
-    // Funciones auxiliares para mensajes
+    // Funciones auxiliares
     function mostrarMensaje(elem, texto, tipo) {
       elem.textContent = texto;
       elem.className = "mensaje " + tipo;
