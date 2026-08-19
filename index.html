@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Académico - Inicio de Sesión</title>
+    <title>Sistema Académico - Inicio de Sesión y Verificación Admin</title>
     <style>
         :root {
             --primary-color: #1e3a8a;
             --primary-hover: #1e40af;
+            --admin-color: #059669;
+            --admin-hover: #047857;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-color: #1f2937;
@@ -33,11 +35,11 @@
 
         .login-container {
             background-color: var(--card-bg);
-            padding: 40px 30px;
+            padding: 35px 30px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             text-align: center;
         }
 
@@ -50,11 +52,11 @@
         .login-header p {
             color: #6b7280;
             font-size: 0.9rem;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-align: left;
         }
 
@@ -66,22 +68,23 @@
             color: var(--text-color);
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 12px 14px;
+            padding: 11px 14px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 0.95rem;
+            background-color: #fff;
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
         }
 
-        .btn-login {
+        .btn {
             width: 100%;
             padding: 12px;
             background-color: var(--primary-color);
@@ -94,13 +97,50 @@
             transition: background-color 0.2s;
         }
 
-        .btn-login:hover {
+        .btn:hover {
             background-color: var(--primary-hover);
         }
 
-        .btn-login:disabled {
+        .btn:disabled {
             background-color: #9ca3af;
             cursor: not-allowed;
+        }
+
+        .btn-admin-toggle {
+            background-color: #4b5563;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-admin-toggle:hover {
+            background-color: #374151;
+        }
+
+        .btn-add-user {
+            background-color: var(--admin-color);
+            margin-top: 10px;
+        }
+
+        .btn-add-user:hover {
+            background-color: var(--admin-hover);
+        }
+
+        .admin-box {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e5e7eb;
+            text-align: left;
+        }
+
+        .admin-box h2 {
+            font-size: 1.1rem;
+            color: var(--admin-color);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         #message {
@@ -110,6 +150,7 @@
             border-radius: 6px;
             display: none;
             word-break: break-word;
+            text-align: center;
         }
 
         #message.error {
@@ -148,9 +189,10 @@
     <div class="login-container">
         <div class="login-header">
             <h1>Sistema Académico</h1>
-            <p>Ingresa tus credenciales para acceder</p>
+            <p>Ingresa credenciales para acceder</p>
         </div>
 
+        <!-- FORMULARIO DE LOGIN -->
         <form id="loginForm">
             <div class="form-group">
                 <label for="usuario">Usuario</label>
@@ -162,10 +204,58 @@
                 <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-login">
+            <button type="submit" id="btnSubmit" class="btn">
                 Iniciar Sesión
             </button>
         </form>
+
+        <!-- BOTÓN PARA DESPLEGAR PANEL ADMIN -->
+        <button type="button" id="btnToggleAdmin" class="btn btn-admin-toggle">
+            ⚙️ Herramientas de Administrador (Agregar Usuario)
+        </button>
+
+        <!-- PANEL ADMIN PARA AGREGAR USUARIOS A GOOGLE SHEETS -->
+        <div id="adminPanel" class="admin-box hidden">
+            <h2>Agregar Usuario a Google Sheets</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="newUsuario">Nuevo Usuario</label>
+                    <input type="text" id="newUsuario" placeholder="Ej. profesor1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Contraseña</label>
+                    <input type="password" id="newPassword" placeholder="••••••••" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newNombre">Nombre Completo</label>
+                    <input type="text" id="newNombre" placeholder="Ej. Prof. Carlos Pérez" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="newRol">Rol</label>
+                    <select id="newRol" required>
+                        <option value="docente">Docente</option>
+                        <option value="estudiante">Estudiante</option>
+                        <option value="tutor">Tutor / Padre</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newEstado">Estado</label>
+                    <select id="newEstado" required>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="btnRegister" class="btn btn-add-user">
+                    Guardar en Hoja de Cálculo
+                </button>
+            </form>
+        </div>
 
         <div id="message"></div>
     </div>
@@ -174,22 +264,27 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0UYmyn02hnXxgwsLdNKHiD-cIBGkEHb-HmyPsh_G_EJ61bvcmLZTgtftfyq_kqeYOFA/exec";
 
         const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
         const btnSubmit = document.getElementById('btnSubmit');
+        const btnRegister = document.getElementById('btnRegister');
+        const btnToggleAdmin = document.getElementById('btnToggleAdmin');
+        const adminPanel = document.getElementById('adminPanel');
         const messageDiv = document.getElementById('message');
 
+        // Alternar visibilidad del panel de Admin
+        btnToggleAdmin.addEventListener('click', () => {
+            adminPanel.classList.toggle('hidden');
+            hideMessage();
+        });
+
+        // INICIO DE SESIÓN
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const usuario = document.getElementById('usuario').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            if (!usuario || !password) {
-                showMessage("Por favor, completa todos los campos.", "error");
-                return;
-            }
-
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = '<span class="spinner"></span> Verificando...';
+            setLoading(btnSubmit, true, 'Verificando...');
             hideMessage();
 
             try {
@@ -209,35 +304,67 @@
                 try {
                     data = JSON.parse(textData);
                 } catch(err) {
-                    console.error("Respuesta no es JSON:", textData);
-                    showMessage("Error de respuesta del servidor Google. Revisa permisos de Apps Script.", "error");
+                    showMessage("Error: La respuesta de Google Apps Script no fue válida.", "error");
                     return;
                 }
 
                 if (data.success) {
-                    showMessage(`Bienvenido(a), ${data.usuario.nombre}`, "success");
-                    
+                    showMessage(`¡Éxito! Bienvenido(a) ${data.usuario.nombre} [Rol: ${data.usuario.rol}]`, "success");
                     localStorage.setItem('user_session', JSON.stringify(data.usuario));
 
-                    setTimeout(() => {
-                        const rol = String(data.usuario.rol).toLowerCase();
-                        if (rol === 'admin') {
-                            window.location.href = "./admin.html";
-                        } else {
-                            alert(`Bienvenido ${data.usuario.nombre}. El panel [${rol}] está en desarrollo.`);
-                        }
-                    }, 600);
-
+                    const rol = String(data.usuario.rol).toLowerCase();
+                    if (rol === 'admin') {
+                        setTimeout(() => {
+                            window.location.href = "admin.html";
+                        }, 1000);
+                    }
                 } else {
                     showMessage(data.message || "Usuario o contraseña incorrectos.", "error");
                 }
 
             } catch (error) {
-                console.error("Error de conexión:", error);
-                showMessage("Ocurrió un error al conectar con el servidor: " + error.message, "error");
+                showMessage("Error de conexión con el servidor: " + error.message, "error");
             } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Iniciar Sesión';
+                setLoading(btnSubmit, false, 'Iniciar Sesión');
+            }
+        });
+
+        // AGREGAR NUEVO USUARIO A LA HOJA DE CÁLCULO
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const usuario = document.getElementById('newUsuario').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const nombre = document.getElementById('newNombre').value.trim();
+            const rol = document.getElementById('newRol').value;
+            const estado = document.getElementById('newEstado').value;
+
+            setLoading(btnRegister, true, 'Escribiendo en Google Sheets...');
+            hideMessage();
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'registrarUsuario',
+                        usuario, password, nombre, rol, estado
+                    })
+                });
+
+                const textData = await response.text();
+                let data = JSON.parse(textData);
+
+                if (data.success) {
+                    showMessage("✅ ¡Usuario escrito con éxito en la Hoja de Cálculo!", "success");
+                    registerForm.reset();
+                } else {
+                    showMessage("❌ Error: " + data.message, "error");
+                }
+            } catch (error) {
+                showMessage("Error al guardar usuario en la hoja de cálculo.", "error");
+            } finally {
+                setLoading(btnRegister, false, 'Guardar en Hoja de Cálculo');
             }
         });
 
@@ -249,6 +376,11 @@
         function hideMessage() {
             messageDiv.style.display = 'none';
             messageDiv.className = '';
+        }
+
+        function setLoading(btn, isLoading, defaultText) {
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading ? `<span class="spinner"></span> ${defaultText}` : defaultText;
         }
     </script>
 </body>
