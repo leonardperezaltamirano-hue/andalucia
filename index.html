@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Académico - Inicio de Sesión</title>
+    <title>Sistema Académico</title>
     <style>
         :root {
             --primary-color: #1e3a8a;
@@ -31,30 +31,33 @@
             padding: 20px;
         }
 
-        .login-container {
+        .container {
             background-color: var(--card-bg);
-            padding: 40px 30px;
+            padding: 35px 30px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 400px;
+            max-width: 480px;
+        }
+
+        .header {
             text-align: center;
-        }
-
-        .login-header h1 {
-            color: var(--primary-color);
-            font-size: 1.6rem;
-            margin-bottom: 8px;
-        }
-
-        .login-header p {
-            color: #6b7280;
-            font-size: 0.9rem;
             margin-bottom: 24px;
         }
 
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.6rem;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             text-align: left;
         }
 
@@ -66,22 +69,23 @@
             color: var(--text-color);
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
-            padding: 12px 14px;
+            padding: 11px 14px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #fff;
+            transition: border-color 0.2s;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
         }
 
-        .btn-login {
+        .btn {
             width: 100%;
             padding: 12px;
             background-color: var(--primary-color);
@@ -92,33 +96,44 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
+            margin-top: 8px;
         }
 
-        .btn-login:hover {
+        .btn:hover {
             background-color: var(--primary-hover);
         }
 
-        .btn-login:disabled {
+        .btn:disabled {
             background-color: #9ca3af;
             cursor: not-allowed;
         }
 
-        #message {
+        .btn-secondary {
+            background-color: #4b5563;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+
+        .message {
             margin-top: 18px;
             font-size: 0.88rem;
             padding: 10px;
             border-radius: 6px;
             display: none;
+            text-align: center;
         }
 
-        #message.error {
+        .message.error {
             display: block;
             background-color: #fee2e2;
             color: var(--error-color);
             border: 1px solid #fca5a5;
         }
 
-        #message.success {
+        .message.success {
             display: block;
             background-color: #dcfce7;
             color: var(--success-color);
@@ -140,20 +155,35 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .user-info {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #1e40af;
+        }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="login-header">
+    <!-- SECCIÓN 1: INICIO DE SESIÓN -->
+    <div id="loginSection" class="container">
+        <div class="header">
             <h1>Sistema Académico</h1>
             <p>Ingresa tus credenciales para acceder</p>
         </div>
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="usuario">Usuario / Correo</label>
-                <input type="text" id="usuario" placeholder="Ej. admin o profesor1" required autocomplete="username">
+                <label for="usuario">Usuario</label>
+                <input type="text" id="usuario" placeholder="Ej. admin" required autocomplete="username">
             </div>
 
             <div class="form-group">
@@ -161,87 +191,185 @@
                 <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
             </div>
 
-            <button type="submit" id="btnSubmit" class="btn-login">
-                Iniciar Sesión
-            </button>
+            <button type="submit" id="btnLogin" class="btn">Iniciar Sesión</button>
         </form>
 
-        <div id="message"></div>
+        <div id="loginMessage" class="message"></div>
+    </div>
+
+    <!-- SECCIÓN 2: PANEL DE ADMINISTRACIÓN (AGREGAR USUARIOS) -->
+    <div id="adminSection" class="container hidden">
+        <div class="header">
+            <h1>Panel de Administración</h1>
+            <p>Agregar nuevo usuario a Google Sheets</p>
+        </div>
+
+        <div class="user-info">
+            <strong>Sesión activa:</strong> <span id="adminName"></span> (<span id="adminRole"></span>)
+        </div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="newUsuario">Nombre de Usuario</label>
+                <input type="text" id="newUsuario" placeholder="Ej. doc_martinez" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newPassword">Contraseña</label>
+                <input type="password" id="newPassword" placeholder="••••••••" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newNombre">Nombre Completo</label>
+                <input type="text" id="newNombre" placeholder="Ej. Prof. Roberto Martínez" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newRol">Rol del Usuario</label>
+                <select id="newRol" required>
+                    <option value="docente">Docente</option>
+                    <option value="estudiante">Estudiante</option>
+                    <option value="tutor">Tutor / Padre</option>
+                    <option value="admin">Administrador</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="newEstado">Estado</label>
+                <select id="newEstado" required>
+                    <option value="activo">Activo</option>
+                    <option value="inactivo">Inactivo</option>
+                </select>
+            </div>
+
+            <button type="submit" id="btnRegister" class="btn">Guardar Usuario</button>
+            <button type="button" id="btnLogout" class="btn btn-secondary">Cerrar Sesión</button>
+        </form>
+
+        <div id="adminMessage" class="message"></div>
     </div>
 
     <script>
-        // URL de tu implementación de Google Apps Script
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0UYmyn02hnXxgwsLdNKHiD-cIBGkEHb-HmyPsh_G_EJ61bvcmLZTgtftfyq_kqeYOFA/exec";
 
+        // Elementos DOM
+        const loginSection = document.getElementById('loginSection');
+        const adminSection = document.getElementById('adminSection');
         const loginForm = document.getElementById('loginForm');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const messageDiv = document.getElementById('message');
+        const registerForm = document.getElementById('registerForm');
+        
+        const btnLogin = document.getElementById('btnLogin');
+        const btnRegister = document.getElementById('btnRegister');
+        const btnLogout = document.getElementById('btnLogout');
+        
+        const loginMessage = document.getElementById('loginMessage');
+        const adminMessage = document.getElementById('adminMessage');
 
+        // Manejo de Inicio de Sesión
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const usuario = document.getElementById('usuario').value.trim();
             const password = document.getElementById('password').value.trim();
 
-            if (!usuario || !password) {
-                showMessage("Por favor, completa todos los campos.", "error");
-                return;
-            }
-
-            // Deshabilitar botón y mostrar spinner de carga
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = '<span class="spinner"></span> Verificando...';
-            hideMessage();
+            setLoading(btnLogin, true, 'Verificando...');
+            showMessage(loginMessage, '', '');
 
             try {
                 const response = await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'text/plain;charset=utf-8', 
-                    },
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'login', usuario, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('user_session', JSON.stringify(data.usuario));
+                    
+                    if (data.usuario.rol.toLowerCase() === 'admin') {
+                        showAdminPanel(data.usuario);
+                    } else {
+                        showMessage(loginMessage, `Bienvenido(a) ${data.usuario.nombre}. Panel de ${data.usuario.rol} en desarrollo.`, 'success');
+                    }
+                } else {
+                    showMessage(loginMessage, data.message || 'Credenciales incorrectas.', 'error');
+                }
+            } catch (error) {
+                showMessage(loginMessage, 'Error al conectar con el servidor.', 'error');
+            } finally {
+                setLoading(btnLogin, false, 'Iniciar Sesión');
+            }
+        });
+
+        // Registrar Nuevo Usuario
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const usuario = document.getElementById('newUsuario').value.trim();
+            const password = document.getElementById('newPassword').value.trim();
+            const nombre = document.getElementById('newNombre').value.trim();
+            const rol = document.getElementById('newRol').value;
+            const estado = document.getElementById('newEstado').value;
+
+            setLoading(btnRegister, true, 'Guardando...');
+            showMessage(adminMessage, '', '');
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({
-                        action: 'login',
-                        usuario: usuario,
-                        password: password
+                        action: 'registrarUsuario',
+                        usuario, password, nombre, rol, estado
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
-                    showMessage(`Bienvenido(a), ${data.usuario.nombre}`, "success");
-                    
-                    // Guardar los datos del usuario en la sesión local del navegador
-                    localStorage.setItem('user_session', JSON.stringify(data.usuario));
-
-                    // Notificación de ingreso y redirección futura
-                    setTimeout(() => {
-                        alert(`Inicio de sesión correcto como [${data.usuario.rol.toUpperCase()}]. Redirigiendo al panel principal...`);
-                        // Cuando crees la siguiente vista, descomenta la siguiente línea:
-                        // window.location.href = "dashboard.html";
-                    }, 1000);
-
+                    showMessage(adminMessage, data.message, 'success');
+                    registerForm.reset();
                 } else {
-                    showMessage(data.message || "Credenciales incorrectas.", "error");
+                    showMessage(adminMessage, data.message, 'error');
                 }
-
             } catch (error) {
-                console.error("Error en la solicitud:", error);
-                showMessage("Ocurrió un error al conectar con el servidor. Verifica tu conexión o reintenta.", "error");
+                showMessage(adminMessage, 'Error al registrar usuario.', 'error');
             } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Iniciar Sesión';
+                setLoading(btnRegister, false, 'Guardar Usuario');
             }
         });
 
-        function showMessage(text, type) {
-            messageDiv.textContent = text;
-            messageDiv.className = type;
+        // Cerrar Sesión
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem('user_session');
+            adminSection.classList.add('hidden');
+            loginSection.classList.remove('hidden');
+            loginForm.reset();
+            showMessage(loginMessage, '', '');
+        });
+
+        // Utilidades
+        function showAdminPanel(user) {
+            document.getElementById('adminName').textContent = user.nombre;
+            document.getElementById('adminRole').textContent = user.rol.toUpperCase();
+            loginSection.classList.add('hidden');
+            adminSection.classList.remove('hidden');
         }
 
-        function hideMessage() {
-            messageDiv.style.display = 'none';
-            messageDiv.className = '';
+        function showMessage(el, text, type) {
+            if (!text) {
+                el.style.display = 'none';
+                el.className = 'message';
+                return;
+            }
+            el.textContent = text;
+            el.className = `message ${type}`;
+        }
+
+        function setLoading(btn, isLoading, defaultText) {
+            btn.disabled = isLoading;
+            btn.innerHTML = isLoading ? `<span class="spinner"></span> ${defaultText}` : defaultText;
         }
     </script>
 </body>
