@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Usuarios</title>
-  <!-- Tailwind CSS -->
+  <!-- Tailwind CSS para diseño moderno -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Iconos Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -213,7 +213,7 @@
       lucide.createIcons();
     });
 
-    // 1. Abrir/Cerrar Modal Clave
+    // 1. Abrir/Cerrar Modal Clave Admin
     function openAdminPrompt() {
       document.getElementById('adminSecretKey').value = '';
       document.getElementById('passModalMsg').classList.add('hidden');
@@ -248,14 +248,14 @@
       document.getElementById('adminUserForm').reset();
     }
 
-    // 3. Cargar y Renderizar Tabla de Usuarios desde la Hoja
+    // 3. Cargar y Renderizar Tabla de Usuarios desde Google Sheets
     function cargarTablaUsuarios() {
       const tbody = document.getElementById('usersTableBody');
       tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Cargando usuarios...</td></tr>`;
 
       google.script.run
         .withSuccessHandler(res => {
-          if (res.exito) {
+          if (res && res.exito) {
             tbody.innerHTML = '';
             if (res.datos.length === 0) {
               tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No hay usuarios en la hoja.</td></tr>`;
@@ -285,8 +285,11 @@
               tbody.appendChild(tr);
             });
           } else {
-            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-400">Error: ${res.mensaje}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-400">Error: ${res ? res.mensaje : 'Desconocido'}</td></tr>`;
           }
+        })
+        .withFailureHandler(err => {
+          tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-rose-400">Error en el servidor: ${err}</td></tr>`;
         })
         .obtenerUsuarios();
     }
@@ -295,10 +298,10 @@
     function toggleEstado(fila, nuevoEstado) {
       google.script.run
         .withSuccessHandler(res => {
-          if (res.exito) {
+          if (res && res.exito) {
             cargarTablaUsuarios();
           } else {
-            alert("Error al cambiar estado: " + res.mensaje);
+            alert("Error al cambiar estado: " + (res ? res.mensaje : 'Error de comunicación'));
           }
         })
         .cambiarEstadoUsuario(fila, nuevoEstado);
@@ -323,13 +326,19 @@
 
       google.script.run
         .withSuccessHandler(res => {
-          if (res.exito) {
+          if (res && res.exito) {
             showSuccess(msg, "¡Usuario agregado correctamente a la hoja!");
             document.getElementById('adminUserForm').reset();
             cargarTablaUsuarios();
           } else {
-            showError(msg, "Error: " + res.mensaje);
+            showError(msg, "Error: " + (res ? res.mensaje : 'Sin respuesta'));
           }
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar Usuario`;
+          lucide.createIcons();
+        })
+        .withFailureHandler(err => {
+          showError(msg, "Error crítico: " + err);
           btn.disabled = false;
           btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar Usuario`;
           lucide.createIcons();
@@ -350,7 +359,7 @@
 
       google.script.run
         .withSuccessHandler(res => {
-          if (res.exito) {
+          if (res && res.exito) {
             const usuarioValido = res.datos.find(u => 
               u.usuario.toString().toLowerCase() === user.toLowerCase() && 
               u.password.toString() === pass &&
@@ -363,8 +372,14 @@
               showError(msg, "Usuario o contraseña incorrectos, o cuenta inactiva.");
             }
           } else {
-            showError(msg, "Error al consultar la hoja: " + res.mensaje);
+            showError(msg, "Error al consultar la hoja: " + (res ? res.mensaje : ''));
           }
+          btn.disabled = false;
+          btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+          lucide.createIcons();
+        })
+        .withFailureHandler(err => {
+          showError(msg, "Error de comunicación: " + err);
           btn.disabled = false;
           btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
           lucide.createIcons();
