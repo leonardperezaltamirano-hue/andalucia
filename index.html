@@ -72,7 +72,7 @@
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s;
         }
 
         .form-group input:focus {
@@ -109,6 +109,7 @@
             padding: 10px;
             border-radius: 6px;
             display: none;
+            word-break: break-word;
         }
 
         #message.error {
@@ -152,7 +153,7 @@
 
         <form id="loginForm">
             <div class="form-group">
-                <label for="usuario">Usuario / Correo</label>
+                <label for="usuario">Usuario</label>
                 <input type="text" id="usuario" placeholder="Ej. admin" required autocomplete="username">
             </div>
 
@@ -202,31 +203,38 @@
                     })
                 });
 
-                const data = await response.json();
+                const textData = await response.text();
+                let data;
+                
+                try {
+                    data = JSON.parse(textData);
+                } catch(err) {
+                    console.error("Respuesta no es JSON:", textData);
+                    showMessage("Error de respuesta del servidor Google. Revisa permisos de Apps Script.", "error");
+                    return;
+                }
 
                 if (data.success) {
                     showMessage(`Bienvenido(a), ${data.usuario.nombre}`, "success");
                     
-                    // Guardar los datos de sesión en el navegador
                     localStorage.setItem('user_session', JSON.stringify(data.usuario));
 
-                    // Redirección según el rol del usuario
                     setTimeout(() => {
-                        const rol = data.usuario.rol.toLowerCase();
+                        const rol = String(data.usuario.rol).toLowerCase();
                         if (rol === 'admin') {
-                            window.location.href = "admin.html";
+                            window.location.href = "./admin.html";
                         } else {
-                            alert(`Bienvenido ${data.usuario.nombre}. El módulo para el rol [${rol.toUpperCase()}] se encuentra en desarrollo.`);
+                            alert(`Bienvenido ${data.usuario.nombre}. El panel [${rol}] está en desarrollo.`);
                         }
-                    }, 800);
+                    }, 600);
 
                 } else {
-                    showMessage(data.message || "Credenciales incorrectas.", "error");
+                    showMessage(data.message || "Usuario o contraseña incorrectos.", "error");
                 }
 
             } catch (error) {
-                console.error("Error en la solicitud:", error);
-                showMessage("Ocurrió un error al conectar con el servidor.", "error");
+                console.error("Error de conexión:", error);
+                showMessage("Ocurrió un error al conectar con el servidor: " + error.message, "error");
             } finally {
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = 'Iniciar Sesión';
