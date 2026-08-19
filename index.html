@@ -12,138 +12,100 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
 
-  <!-- ========================================== -->
-  <!-- VISTA 1: INICIO DE SESIÓN                  -->
-  <!-- ========================================== -->
-  <div id="loginCard" class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700">
-    <div class="text-center mb-8">
-      <div class="inline-flex p-3 bg-indigo-600/20 text-indigo-400 rounded-xl mb-3">
-        <i data-lucide="lock" class="w-8 h-8"></i>
-      </div>
-      <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
-      <p class="text-slate-400 text-sm mt-1">Acceda al sistema de administración</p>
-    </div>
-
-    <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
-      <div>
-        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Usuario</label>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-            <i data-lucide="user" class="w-5 h-5"></i>
-          </span>
-          <input type="text" id="loginUser" required placeholder="Ej: admin"
-            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Contraseña</label>
-        <div class="relative">
-          <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-            <i data-lucide="key-round" class="w-5 h-5"></i>
-          </span>
-          <input type="password" id="loginPass" required placeholder="••••••••"
-            class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
-        </div>
-      </div>
-
-      <div id="loginMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
-
-      <button type="submit" id="btnLogin"
-        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-        <span>Ingresar</span>
-        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-      </button>
-    </form>
-  </div>
-
-
-  <!-- ========================================== -->
-  <!-- VISTA 2: PANEL DE ADMINISTRACIÓN / USUARIOS -->
-  <!-- ========================================== -->
-  <div id="adminPanel" class="hidden max-w-4xl w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+  <div class="max-w-md w-full space-y-4">
     
-    <!-- Barra Superior -->
-    <div class="bg-slate-900/60 p-6 border-b border-slate-700 flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <h2 class="text-xl font-bold text-white flex items-center gap-2">
-          <i data-lucide="users" class="text-indigo-400"></i> Gestor de Usuarios
+    <!-- ========================================== -->
+    <!-- VISTA 1: INICIO DE SESIÓN                  -->
+    <!-- ========================================== -->
+    <div id="loginCard" class="bg-slate-800 rounded-2xl shadow-2xl p-8 border border-slate-700">
+      <div class="text-center mb-8">
+        <div class="inline-flex p-3 bg-indigo-600/20 text-indigo-400 rounded-xl mb-3">
+          <i data-lucide="lock" class="w-8 h-8"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Iniciar Sesión</h1>
+        <p class="text-slate-400 text-sm mt-1">Acceso al Sistema</p>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Usuario</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i data-lucide="user" class="w-5 h-5"></i>
+            </span>
+            <input type="text" id="loginUser" required placeholder="Ej: admin"
+              class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase text-slate-400 mb-2">Contraseña</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i data-lucide="key-round" class="w-5 h-5"></i>
+            </span>
+            <input type="password" id="loginPass" required placeholder="••••••••"
+              class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition">
+          </div>
+        </div>
+
+        <div id="loginMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
+
+        <button type="submit" id="btnLogin"
+          class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <span>Ingresar</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </form>
+
+      <!-- BOTÓN ADMIN INFERIOR -->
+      <div class="mt-6 pt-6 border-t border-slate-700/60 text-center">
+        <button onclick="openAdminPrompt()" type="button"
+          class="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-indigo-400 transition py-2 px-3 rounded-lg hover:bg-slate-700/50">
+          <i data-lucide="shield-check" class="w-4 h-4"></i> Acceso Admin
+        </button>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PANEL RÁPIDO ADMIN (AGREGAR USUARIOS)      -->
+    <!-- ========================================== -->
+    <div id="quickAdminPanel" class="hidden bg-slate-800 rounded-2xl shadow-2xl p-6 border border-slate-700">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <i data-lucide="user-plus" class="text-indigo-400 w-5 h-5"></i> Agregar Nuevo Usuario
         </h2>
-        <p class="text-slate-400 text-xs mt-1">Conectado a Google Sheets</p>
-      </div>
-
-      <div class="flex gap-2">
-        <button onclick="openModal()" 
-          class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition shadow">
-          <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Usuario
-        </button>
-        <button onclick="logout()" 
-          class="bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-2 rounded-xl text-sm font-semibold transition">
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Tabla de Usuarios -->
-    <div class="p-6 overflow-x-auto">
-      <table class="w-full text-left text-sm text-slate-300">
-        <thead class="bg-slate-900/50 text-slate-400 text-xs uppercase tracking-wider">
-          <tr>
-            <th class="p-3 rounded-l-lg">Nombre</th>
-            <th class="p-3">Usuario</th>
-            <th class="p-3">Rol</th>
-            <th class="p-3">Estado</th>
-            <th class="p-3 rounded-r-lg text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="usersTableBody" class="divide-y divide-slate-700/50">
-          <tr>
-            <td colspan="5" class="p-8 text-center text-slate-500">Cargando lista de usuarios...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-
-  <!-- ========================================== -->
-  <!-- MODAL: AGREGAR NUEVO USUARIO               -->
-  <!-- ========================================== -->
-  <div id="userModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      
-      <div class="flex justify-between items-center mb-6">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i data-lucide="user-plus" class="text-indigo-400"></i> Registrar Usuario
-        </h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-white">
+        <button onclick="closeAdminPanel()" class="text-slate-400 hover:text-white transition">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <form id="newUserForm" onsubmit="handleCreateUser(event)" class="space-y-4">
+      <form id="adminUserForm" onsubmit="handleCreateUserAdmin(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Nombre Completo</label>
-          <input type="text" id="newNombre" required placeholder="Ej: Juan Pérez"
-            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Usuario</label>
-          <input type="text" id="newUsuario" required placeholder="Ej: jperez"
-            class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Contraseña</label>
-          <input type="password" id="newPassword" required placeholder="••••••••"
+          <input type="text" id="admNombre" required placeholder="Ej: Juan Pérez"
             class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Usuario</label>
+            <input type="text" id="admUsuario" required placeholder="Ej: jperez"
+              class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Contraseña</label>
+            <input type="text" id="admPassword" required placeholder="••••••••"
+              class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
             <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Rol</label>
-            <select id="newRol" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+            <select id="admRol" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
               <option value="usuario">Usuario</option>
               <option value="administrador">Administrador</option>
               <option value="profesor">Profesor</option>
@@ -152,18 +114,45 @@
 
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-400 mb-1">Estado</label>
-            <select id="newEstado" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+            <select id="admEstado" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
               <option value="activo">Activo</option>
               <option value="inactivo">Inactivo</option>
             </select>
           </div>
         </div>
 
-        <div id="modalMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
+        <div id="admMsg" class="hidden text-xs text-center p-3 rounded-lg"></div>
 
-        <div class="flex justify-end gap-3 pt-4">
-          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-700 text-slate-300 rounded-xl text-sm hover:bg-slate-600 transition">Cancelar</button>
-          <button type="submit" id="btnSaveUser" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-500 transition">Guardar Usuario</button>
+        <button type="submit" id="btnAdmSave" 
+          class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i> Guardar en Google Sheets
+        </button>
+      </form>
+    </div>
+
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL CLAVE ADMIN                          -->
+  <!-- ========================================== -->
+  <div id="adminPassModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+      <div class="text-center mb-4">
+        <i data-lucide="key" class="w-8 h-8 text-indigo-400 mx-auto mb-2"></i>
+        <h3 class="text-lg font-bold text-white">Autenticación Requerida</h3>
+        <p class="text-xs text-slate-400 mt-1">Ingresa la clave maestra para continuar</p>
+      </div>
+
+      <form onsubmit="verifyAdminPass(event)" class="space-y-4">
+        <input type="password" id="adminSecretKey" placeholder="Clave admin" required
+          class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-center text-sm focus:outline-none focus:border-indigo-500">
+        
+        <div id="passModalMsg" class="hidden text-xs text-center p-2 rounded-lg bg-rose-500/20 text-rose-300"></div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeAdminPassModal()" class="w-1/2 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-xs font-semibold">Cancelar</button>
+          <button type="submit" class="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold">Verificar</button>
         </div>
       </form>
     </div>
@@ -171,17 +160,80 @@
 
 
   <!-- ========================================== -->
-  <!-- LÓGICA DE JAVASCRIPT                       -->
+  <!-- JAVASCRIPT                                 -->
   <!-- ========================================== -->
   <script>
     let usuariosLista = [];
 
-    // Inicializar Iconos Lucide
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
     });
 
-    // 1. Manejo del Login
+    // 1. Abrir Modal de Clave Admin
+    function openAdminPrompt() {
+      document.getElementById('adminSecretKey').value = '';
+      document.getElementById('passModalMsg').classList.add('hidden');
+      document.getElementById('adminPassModal').classList.remove('hidden');
+    }
+
+    function closeAdminPassModal() {
+      document.getElementById('adminPassModal').classList.add('hidden');
+    }
+
+    // 2. Verificar la contraseña adminroot
+    function verifyAdminPass(e) {
+      e.preventDefault();
+      const pass = document.getElementById('adminSecretKey').value;
+      const msg = document.getElementById('passModalMsg');
+
+      if (pass === 'adminroot') {
+        closeAdminPassModal();
+        document.getElementById('quickAdminPanel').classList.remove('hidden');
+        lucide.createIcons();
+      } else {
+        msg.innerText = "Contraseña de administrador incorrecta";
+        msg.classList.remove('hidden');
+      }
+    }
+
+    function closeAdminPanel() {
+      document.getElementById('quickAdminPanel').classList.add('hidden');
+      document.getElementById('adminUserForm').reset();
+    }
+
+    // 3. Crear y Guardar Usuario en Google Sheets
+    function handleCreateUserAdmin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnAdmSave');
+      const msg = document.getElementById('admMsg');
+
+      const nuevoData = {
+        nombre: document.getElementById('admNombre').value.trim(),
+        usuario: document.getElementById('admUsuario').value.trim(),
+        password: document.getElementById('admPassword').value.trim(),
+        rol: document.getElementById('admRol').value,
+        estado: document.getElementById('admEstado').value
+      };
+
+      btn.disabled = true;
+      btn.innerText = "Guardando en Google Sheets...";
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.exito) {
+            showSuccess(msg, "¡Usuario registrado y guardado con éxito!");
+            document.getElementById('adminUserForm').reset();
+          } else {
+            showError(msg, "Error: " + res.mensaje);
+          }
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="save" class="w-4 h-4"></i> Guardar en Google Sheets`;
+          lucide.createIcons();
+        })
+        .guardarUsuario(nuevoData);
+    }
+
+    // 4. Login Estándar
     function handleLogin(e) {
       e.preventDefault();
       const user = document.getElementById('loginUser').value.trim();
@@ -190,148 +242,40 @@
       const msg = document.getElementById('loginMsg');
 
       btn.disabled = true;
-      btn.innerHTML = `<span>Validando...</span>`;
+      btn.innerText = "Validando...";
 
       google.script.run
         .withSuccessHandler(res => {
           if (res.exito) {
-            usuariosLista = res.datos;
-            const usuarioValido = usuariosLista.find(u => 
+            const usuarioValido = res.datos.find(u => 
               u.usuario.toString().toLowerCase() === user.toLowerCase() && 
               u.password.toString() === pass &&
               u.estado.toString().toLowerCase() === 'activo'
             );
 
             if (usuarioValido) {
-              document.getElementById('loginCard').classList.add('hidden');
-              document.getElementById('adminPanel').classList.remove('hidden');
-              renderUsersTable();
+              showSuccess(msg, "¡Acceso concedido! Bienvenido " + usuarioValido.nombre);
             } else {
               showError(msg, "Usuario/Contraseña incorrectos o cuenta inactiva.");
-              btn.disabled = false;
-              btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-              lucide.createIcons();
             }
           } else {
-            showError(msg, "Error de conexión con la hoja: " + res.mensaje);
-            btn.disabled = false;
-            btn.innerHTML = `<span>Ingresar</span>`;
+            showError(msg, "Error al consultar la hoja: " + res.mensaje);
           }
+          btn.disabled = false;
+          btn.innerHTML = `<span>Ingresar</span><i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+          lucide.createIcons();
         })
         .obtenerUsuarios();
     }
 
-    // 2. Renderizar Tabla de Usuarios
-    function renderUsersTable() {
-      const tbody = document.getElementById('usersTableBody');
-      tbody.innerHTML = '';
-
-      if (usuariosLista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">No hay usuarios registrados.</td></tr>`;
-        return;
-      }
-
-      usuariosLista.forEach(u => {
-        const isActivo = u.estado.toString().toLowerCase() === 'activo';
-        const badgeEstado = isActivo 
-          ? `<span class="bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-full text-xs font-semibold">Activo</span>`
-          : `<span class="bg-rose-500/20 text-rose-400 px-2.5 py-1 rounded-full text-xs font-semibold">Inactivo</span>`;
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-700/30 transition";
-        tr.innerHTML = `
-          <td class="p-3 font-medium text-white">${u.nombre}</td>
-          <td class="p-3 text-slate-400">${u.usuario}</td>
-          <td class="p-3 capitalize">${u.rol}</td>
-          <td class="p-3">${badgeEstado}</td>
-          <td class="p-3 text-center">
-            <button onclick="toggleEstado(${u.fila}, '${isActivo ? 'inactivo' : 'activo'}')" 
-              class="text-xs px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 transition">
-              ${isActivo ? 'Desactivar' : 'Activar'}
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+    function showSuccess(el, texto) {
+      el.className = "text-xs text-center p-3 rounded-lg bg-emerald-500/20 text-emerald-300 font-medium border border-emerald-500/30 block";
+      el.innerText = texto;
     }
 
-    // 3. Crear Usuario Nuevo
-    function handleCreateUser(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnSaveUser');
-      const msg = document.getElementById('modalMsg');
-
-      const nuevoData = {
-        nombre: document.getElementById('newNombre').value.trim(),
-        usuario: document.getElementById('newUsuario').value.trim(),
-        password: document.getElementById('newPassword').value.trim(),
-        rol: document.getElementById('newRol').value,
-        estado: document.getElementById('newEstado').value
-      };
-
-      btn.disabled = true;
-      btn.innerText = "Guardando...";
-
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res.exito) {
-            closeModal();
-            document.getElementById('newUserForm').reset();
-            // Recargar lista actualizada
-            google.script.run
-              .withSuccessHandler(dataRes => {
-                if(dataRes.exito) {
-                  usuariosLista = dataRes.datos;
-                  renderUsersTable();
-                }
-              })
-              .obtenerUsuarios();
-          } else {
-            showError(msg, res.mensaje);
-          }
-          btn.disabled = false;
-          btn.innerText = "Guardar Usuario";
-        })
-        .guardarUsuario(nuevoData);
-    }
-
-    // 4. Cambiar Estado (Activo / Inactivo)
-    function toggleEstado(fila, nuevoEstado) {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res.exito) {
-            google.script.run
-              .withSuccessHandler(dataRes => {
-                if(dataRes.exito) {
-                  usuariosLista = dataRes.datos;
-                  renderUsersTable();
-                }
-              })
-              .obtenerUsuarios();
-          }
-        })
-        .cambiarEstadoUsuario(fila, nuevoEstado);
-    }
-
-    // Funciones Auxiliares
-    function openModal() {
-      document.getElementById('userModal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('userModal').classList.add('hidden');
-      document.getElementById('modalMsg').classList.add('hidden');
-    }
-
-    function logout() {
-      document.getElementById('adminPanel').classList.add('hidden');
-      document.getElementById('loginCard').classList.remove('hidden');
-      document.getElementById('loginForm').reset();
-    }
-
-    function showError(element, mensaje) {
-      element.className = "text-xs text-center p-3 rounded-lg bg-rose-500/20 text-rose-300 font-medium border border-rose-500/30 block";
-      element.innerText = mensaje;
+    function showError(el, texto) {
+      el.className = "text-xs text-center p-3 rounded-lg bg-rose-500/20 text-rose-300 font-medium border border-rose-500/30 block";
+      el.innerText = texto;
     }
   </script>
 </body>
