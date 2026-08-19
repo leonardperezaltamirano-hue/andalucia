@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Usuarios</title>
+  <title>Acceso al Sistema</title>
   <style>
     * {
       box-sizing: border-box;
@@ -28,6 +28,7 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 400px;
+      margin-bottom: 10px;
     }
 
     .card h2 {
@@ -85,7 +86,25 @@
       cursor: not-allowed;
     }
 
-    #mensaje {
+    .btn-secondary {
+      background-color: #6c757d;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-admin {
+      background-color: #343a40;
+      margin-top: 15px;
+    }
+
+    .btn-admin:hover {
+      background-color: #23272b;
+    }
+
+    .mensaje {
       margin-top: 15px;
       padding: 10px;
       border-radius: 5px;
@@ -105,61 +124,232 @@
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
+    .oculto {
+      display: none !important;
+    }
+
+    .user-profile {
+      text-align: center;
+    }
+
+    .user-profile h3 {
+      color: #28a745;
+      margin-bottom: 10px;
+    }
+
+    .user-profile p {
+      margin-bottom: 8px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Crear Usuario</h2>
-    <form id="userForm">
+  <div class="container">
+    
+    <!-- SECCIÓN 1: INICIO DE SESIÓN -->
+    <div id="sec-login" class="card">
+      <h2>Iniciar Sesión</h2>
+      <form id="formLogin">
+        <div class="form-group">
+          <label for="loginUsuario">Usuario</label>
+          <input type="text" id="loginUsuario" required placeholder="Ingresa tu usuario">
+        </div>
+
+        <div class="form-group">
+          <label for="loginPass">Contraseña</label>
+          <input type="password" id="loginPass" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" id="btnLogin">Ingresar</button>
+      </form>
+
+      <div id="msgLogin" class="mensaje"></div>
+
+      <hr style="margin-top: 20px; border: 0; border-top: 1px solid #eee;">
       
-      <div class="form-group">
-        <label for="nombre">Nombre Completo</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+      <!-- BOTÓN DE ACCESO ADMIN -->
+      <button type="button" class="btn-admin" onclick="mostrarModalAdmin()">Panel Admin (Registrar)</button>
+    </div>
+
+    <!-- SECCIÓN 2: BIENVENIDA (LUEGO DE LOGUEARSE) -->
+    <div id="sec-bienvenida" class="card oculto">
+      <div class="user-profile">
+        <h3>¡Bienvenido al Sistema!</h3>
+        <p><strong>Nombre:</strong> <span id="profileNombre"></span></p>
+        <p><strong>Usuario:</strong> <span id="profileUsuario"></span></p>
+        <p><strong>Rol:</strong> <span id="profileRol"></span></p>
+        <button class="btn-secondary" onclick="cerrarSesion()">Cerrar Sesión</button>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="usuario">Nombre de Usuario</label>
-        <input type="text" id="usuario" name="usuario" placeholder="Ej. jperez" required>
-      </div>
+    <!-- SECCIÓN 3: MODAL CONTRASEÑA ADMIN -->
+    <div id="sec-admin-pass" class="card oculto">
+      <h2>Acceso Administrador</h2>
+      <form id="formAdminAuth">
+        <div class="form-group">
+          <label for="adminKey">Clave Maestra de Admin</label>
+          <input type="password" id="adminKey" placeholder="Ingresa la clave de admin" required>
+        </div>
+        <button type="submit">Verificar Clave</button>
+        <button type="button" class="btn-secondary" onclick="cancelarAdmin()">Volver</button>
+      </form>
+      <div id="msgAdminKey" class="mensaje"></div>
+    </div>
 
-      <div class="form-group">
-        <label for="contrasena">Contraseña</label>
-        <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
-      </div>
+    <!-- SECCIÓN 4: FORMULARIO REGISTRAR NUEVO USUARIO -->
+    <div id="sec-registro" class="card oculto">
+      <h2>Registrar Usuario</h2>
+      <form id="formRegistro">
+        <div class="form-group">
+          <label for="nombre">Nombre Completo</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required>
+        </div>
 
-      <div class="form-group">
-        <label for="rol">Rol del Usuario</label>
-        <select id="rol" name="rol" required>
-          <option value="" disabled selected>Selecciona un rol</option>
-          <option value="Administrador">Administrador</option>
-          <option value="Editor">Editor</option>
-          <option value="Usuario">Usuario Estándar</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="usuario">Nombre de Usuario</label>
+          <input type="text" id="usuario" name="usuario" placeholder="Ej. jperez" required>
+        </div>
 
-      <button type="submit" id="btnSubmit">Registrar Usuario</button>
-    </form>
+        <div class="form-group">
+          <label for="contrasena">Contraseña</label>
+          <input type="password" id="contrasena" name="contrasena" placeholder="••••••••" required>
+        </div>
 
-    <div id="mensaje"></div>
+        <div class="form-group">
+          <label for="rol">Rol del Usuario</label>
+          <select id="rol" name="rol" required>
+            <option value="" disabled selected>Selecciona un rol</option>
+            <option value="Administrador">Administrador</option>
+            <option value="Editor">Editor</option>
+            <option value="Usuario">Usuario Estándar</option>
+          </select>
+        </div>
+
+        <button type="submit" id="btnRegister">Guardar Usuario</button>
+        <button type="button" class="btn-secondary" onclick="salirAdmin()">Volver al Login</button>
+      </form>
+
+      <div id="msgRegister" class="mensaje"></div>
+    </div>
+
   </div>
 
   <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxe6Jk7O0tlSrf9sewWOMHNEs-lLdLjJZR5Wi_UFkXBMSGL30ictsGTV43HSJJrphflfA/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCkd0XKWamXc9hPjHLwXYFl25FKtCtAXDmyPv2R9LBcZMRfAeuXxCd7fEZgZsqBR0R/exec";
+    const CLAVE_ADMIN_REQUERIDA = "adminroot";
 
-    const form = document.getElementById('userForm');
-    const mensajeDiv = document.getElementById('mensaje');
-    const btnSubmit = document.getElementById('btnSubmit');
+    // Vistas
+    const secLogin = document.getElementById('sec-login');
+    const secBienvenida = document.getElementById('sec-bienvenida');
+    const secAdminPass = document.getElementById('sec-admin-pass');
+    const secRegistro = document.getElementById('sec-registro');
 
-    form.addEventListener('submit', function(e) {
+    // -------------------------------------------------------------
+    // 1. INICIO DE SESIÓN
+    // -------------------------------------------------------------
+    document.getElementById('formLogin').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const userVal = document.getElementById('loginUsuario').value.trim();
+      const passVal = document.getElementById('loginPass').value.trim();
+      const btnLogin = document.getElementById('btnLogin');
+      const msgLogin = document.getElementById('msgLogin');
+
+      btnLogin.disabled = true;
+      btnLogin.textContent = "Verificando...";
+      ocultarMensaje(msgLogin);
+
+      // Consultar la hoja de cálculo
+      fetch(APPS_SCRIPT_URL)
+        .then(response => response.json())
+        .then(usuarios => {
+          // Buscar coincidencias
+          const usuarioEncontrado = usuarios.find(u => 
+            String(u.usuario).toLowerCase() === userVal.toLowerCase() && 
+            String(u.contrasena) === passVal
+          );
+
+          if (usuarioEncontrado) {
+            // Éxito: Mostrar perfil
+            document.getElementById('profileNombre').textContent = usuarioEncontrado.nombre;
+            document.getElementById('profileUsuario').textContent = usuarioEncontrado.usuario;
+            document.getElementById('profileRol').textContent = usuarioEncontrado.rol;
+
+            secLogin.classList.add('oculto');
+            secBienvenida.classList.remove('oculto');
+            document.getElementById('formLogin').reset();
+          } else {
+            mostrarMensaje(msgLogin, "Usuario o contraseña incorrectos.", "error");
+          }
+        })
+        .catch(err => {
+          mostrarMensaje(msgLogin, "Error al conectar con la base de datos.", "error");
+          console.error(err);
+        })
+        .finally(() => {
+          btnLogin.disabled = false;
+          btnLogin.textContent = "Ingresar";
+        });
+    });
+
+    function cerrarSesion() {
+      secBienvenida.classList.add('oculto');
+      secLogin.classList.remove('oculto');
+    }
+
+    // -------------------------------------------------------------
+    // 2. ACCESO ADMIN CON CLAVE "adminroot"
+    // -------------------------------------------------------------
+    function mostrarModalAdmin() {
+      secLogin.classList.add('oculto');
+      secAdminPass.classList.remove('oculto');
+    }
+
+    function cancelarAdmin() {
+      secAdminPass.classList.add('oculto');
+      secLogin.classList.remove('oculto');
+      document.getElementById('formAdminAuth').reset();
+      ocultarMensaje(document.getElementById('msgAdminKey'));
+    }
+
+    document.getElementById('formAdminAuth').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const inputKey = document.getElementById('adminKey').value;
+      const msgAdminKey = document.getElementById('msgAdminKey');
+
+      if (inputKey === CLAVE_ADMIN_REQUERIDA) {
+        // Clave correcta -> Ir a Registro
+        secAdminPass.classList.add('oculto');
+        secRegistro.classList.remove('oculto');
+        document.getElementById('formAdminAuth').reset();
+        ocultarMensaje(msgAdminKey);
+      } else {
+        mostrarMensaje(msgAdminKey, "Clave de administración incorrecta.", "error");
+      }
+    });
+
+    function salirAdmin() {
+      secRegistro.classList.add('oculto');
+      secLogin.classList.remove('oculto');
+      document.getElementById('formRegistro').reset();
+      ocultarMensaje(document.getElementById('msgRegister'));
+    }
+
+    // -------------------------------------------------------------
+    // 3. REGISTRO DE NUEVO USUARIO
+    // -------------------------------------------------------------
+    document.getElementById('formRegistro').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      // Bloquear botón y mostrar estado de carga
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = "Registrando...";
-      mensajeDiv.style.display = "none";
+      const btnRegister = document.getElementById('btnRegister');
+      const msgRegister = document.getElementById('msgRegister');
 
-      // Recopilar los datos ingresados
+      btnRegister.disabled = true;
+      btnRegister.textContent = "Guardando...";
+      ocultarMensaje(msgRegister);
+
       const formData = {
         nombre: document.getElementById('nombre').value,
         usuario: document.getElementById('usuario').value,
@@ -167,33 +357,35 @@
         rol: document.getElementById('rol').value
       };
 
-      // Enviar datos mediante la API a Google Apps Script
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       })
       .then(() => {
-        mostrarMensaje("¡Usuario registrado con éxito en Google Drive!", "exito");
-        form.reset();
+        mostrarMensaje(msgRegister, "¡Usuario registrado correctamente!", "exito");
+        document.getElementById('formRegistro').reset();
       })
       .catch(error => {
-        mostrarMensaje("Ocurrió un error al guardar el usuario.", "error");
-        console.error("Error:", error);
+        mostrarMensaje(msgRegister, "Ocurrió un error al guardar.", "error");
+        console.error(error);
       })
       .finally(() => {
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = "Registrar Usuario";
+        btnRegister.disabled = false;
+        btnRegister.textContent = "Guardar Usuario";
       });
     });
 
-    function mostrarMensaje(texto, tipo) {
-      mensajeDiv.textContent = texto;
-      mensajeDiv.className = tipo;
-      mensajeDiv.style.display = "block";
+    // Funciones auxiliares para mensajes
+    function mostrarMensaje(elem, texto, tipo) {
+      elem.textContent = texto;
+      elem.className = "mensaje " + tipo;
+      elem.style.display = "block";
+    }
+
+    function ocultarMensaje(elem) {
+      elem.style.display = "none";
     }
   </script>
 
