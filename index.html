@@ -365,12 +365,12 @@
 
           if (usuarioEncontrado) {
             usuarioActual = usuarioEncontrado;
-            document.getElementById('userLogueado').textContent = usuarioEncontrado.nombre;
-            document.getElementById('rolLogueado').textContent = usuarioEncontrado.rol;
-
-            secLogin.classList.add('oculto');
-            secAcademico.classList.remove('oculto');
-            document.getElementById('formLogin').reset();
+            
+            // Guardamos la sesión en el navegador
+            sessionStorage.setItem('usuarioActual', JSON.stringify(usuarioEncontrado));
+            
+            // Redirección inmediata a la carpeta sacad
+            window.location.href = "sacad/index.html";
           } else {
             mostrarMensaje(msgLogin, "Usuario o contraseña incorrectos.", "error");
           }
@@ -387,6 +387,7 @@
 
     function cerrarSesion() {
       usuarioActual = null;
+      sessionStorage.removeItem('usuarioActual');
       secAcademico.classList.add('oculto');
       secLogin.classList.remove('oculto');
     }
