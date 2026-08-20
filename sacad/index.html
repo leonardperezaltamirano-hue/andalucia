@@ -186,8 +186,8 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // NUEVO ENLACE ACTUALIZADO
-        const API_URL = "https://script.google.com/macros/s/AKfycbySS4k0wgCOW7FAMY50zoBg9cWUZE7TJ3oVIMRoM4LgKzSSQtEl3LxKfhs3avO8ykESsw/exec";
+        // URL DE IMPLEMENTACIÓN ACTUALIZADA
+        const API_URL = "https://script.google.com/macros/s/AKfycbz-9lsU-Vy9nucT0NbC7y7vSEdkec98pnWwHZd8OuEJlzfwavKJR7XjiDVVK9q6ZECcxA/exec";
         
         let appData = { institutions: [] };
         let curInstId = null, curClassId = null, curTrimestre = 1;
@@ -223,24 +223,30 @@
         }
 
         async function fetchFromCloud() {
-            setSyncStatus('syncing', 'Descargando datos...');
+            setSyncStatus('syncing', 'Descargando de Sheets...');
             try {
                 const userParam = encodeURIComponent(usuarioActual.nombre);
                 const response = await fetch(`${API_URL}?user=${userParam}&action=get`);
                 const data = await response.json();
                 
-                if (data && data.institutions) {
+                // Si la nube contiene datos, actualizamos el estado de la aplicación local
+                if (data && Array.isArray(data.institutions)) {
                     appData = data;
                     const savedKey = `pedagogico_lp_v20_${usuarioActual.nombre}`;
                     localStorage.setItem(savedKey, JSON.stringify(appData));
                     refreshCurrentView();
                     setSyncStatus('success', 'Sincronizado');
                 } else {
-                    setSyncStatus('success', 'Hoja lista');
+                    // Si no existen datos en la hoja pero sí localmente, forzamos la primera subida
+                    if (appData.institutions && appData.institutions.length > 0) {
+                        await saveToCloud();
+                    } else {
+                        setSyncStatus('success', 'Hoja lista (sin datos)');
+                    }
                 }
             } catch (error) {
-                console.error("Error al cargar:", error);
-                setSyncStatus('error', 'Modo Local');
+                console.error("Error al cargar datos:", error);
+                setSyncStatus('error', 'Error de lectura');
             }
         }
 
@@ -254,15 +260,13 @@
                     institutions: appData.institutions
                 };
 
-                // Enviamos los datos mediante URLSearchParams para garantizar la recepción en e.parameter.payload
-                const bodyParams = new URLSearchParams();
-                bodyParams.append('payload', JSON.stringify(payload));
+                // Envío en formato JSON plano usando un Blob para garantizar que Apps Script procese e.postData.contents sin bloqueos CORS
+                const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=utf-8' });
 
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-                    body: bodyParams.toString()
+                    body: blob
                 });
 
                 setSyncStatus('success', 'Guardado en Google Sheets');
