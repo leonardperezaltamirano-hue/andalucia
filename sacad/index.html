@@ -186,7 +186,8 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx8MLwmGwY4_GIsVIYJ9nU9v5wpn_TTjJW8g886N3xWo1oRFqzJkw-dqrqQqrqT8iXf/exec";
+        // NUEVO ENLACE ACTUALIZADO
+        const API_URL = "https://script.google.com/macros/s/AKfycbySS4k0wgCOW7FAMY50zoBg9cWUZE7TJ3oVIMRoM4LgKzSSQtEl3LxKfhs3avO8ykESsw/exec";
         
         let appData = { institutions: [] };
         let curInstId = null, curClassId = null, curTrimestre = 1;
@@ -253,11 +254,15 @@
                     institutions: appData.institutions
                 };
 
+                // Enviamos los datos mediante URLSearchParams para garantizar la recepción en e.parameter.payload
+                const bodyParams = new URLSearchParams();
+                bodyParams.append('payload', JSON.stringify(payload));
+
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: bodyParams.toString()
                 });
 
                 setSyncStatus('success', 'Guardado en Google Sheets');
