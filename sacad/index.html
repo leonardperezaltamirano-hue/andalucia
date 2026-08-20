@@ -186,8 +186,8 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // NUEVA URL DE IMPLEMENTACIÓN DE GOOGLE APPS SCRIPT
-        const API_URL = "https://script.google.com/macros/s/AKfycbzm9OvOomXXDyzQ5nsBl6JttitROvwpIHtYJDfu4QSCAtMFIO4Q1xQiOQt_b0QkrpSh3A/exec";
+        // URL DE IMPLEMENTACIÓN PARA ALMACENAMIENTO EN HOJA 'datos'
+        const API_URL = "https://script.google.com/macros/s/AKfycbyOOyAUB3o-qENXUmLnObTzUlFSMl_GY6_Lqmxtu0m8hwq_oDUeHI3VoYvVk7Cn6e1c/exec";
         
         let appData = { institutions: [] };
         let curInstId = null, curClassId = null, curTrimestre = 1;
@@ -223,7 +223,7 @@
         }
 
         async function fetchFromCloud() {
-            setSyncStatus('syncing', 'Descargando...');
+            setSyncStatus('syncing', 'Descargando datos...');
             try {
                 const userParam = encodeURIComponent(usuarioActual.nombre);
                 const response = await fetch(`${API_URL}?user=${userParam}&action=get`);
@@ -243,7 +243,7 @@
                     }
                 }
             } catch (error) {
-                console.error("Error al cargar datos:", error);
+                console.error("Error al cargar datos desde 'datos':", error);
                 setSyncStatus('error', 'Error de lectura');
             }
         }
@@ -258,7 +258,6 @@
                     institutions: appData.institutions
                 };
 
-                // Formateo como URLSearchParams para evitar bloqueos por políticas CORS de Google
                 const bodyParams = new URLSearchParams();
                 bodyParams.append('payload', JSON.stringify(payload));
 
@@ -269,9 +268,9 @@
                     body: bodyParams
                 });
 
-                setSyncStatus('success', 'Guardado en Google Sheets');
+                setSyncStatus('success', 'Guardado en hoja datos');
             } catch (error) {
-                console.error("Error al guardar:", error);
+                console.error("Error al guardar en la nube:", error);
                 setSyncStatus('error', 'Error al guardar');
             }
         }
