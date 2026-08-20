@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA ACADÉMICO PERMIC 2026</title>
+    <title>SISTEMA ACADÉMICO PERMIC v2.0.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -159,7 +159,7 @@
 
         <!-- FOOTER / SYNC STATUS -->
         <footer class="bg-white/80 backdrop-blur-md border-t border-slate-50 py-4 px-12 flex justify-between items-center absolute bottom-0 w-full z-40">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">© 2026 LP ACADÉMICO</span>
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">© 2026 PERMIC SACAD</span>
             <div class="flex items-center gap-3">
                 <button onclick="fetchFromCloud()" title="Forzar Sincronización Completa" class="text-slate-400 hover:text-indigo-600 transition-colors text-xs"><i class="fas fa-sync-alt"></i></button>
                 <div class="flex items-center gap-2"><div id="sync-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500"></div><span id="sync-indicator-text" class="text-[9px] font-bold text-slate-400 uppercase">Sincronizado</span></div>
@@ -186,7 +186,6 @@
     <input type="file" id="file-import" class="hidden" accept=".json" onchange="processFile(event)">
 
     <script>
-        // URL actualizada de tu Web App en Google Apps Script
         const API_URL = "https://script.google.com/macros/s/AKfycbx8MLwmGwY4_GIsVIYJ9nU9v5wpn_TTjJW8g886N3xWo1oRFqzJkw-dqrqQqrqT8iXf/exec";
         
         let appData = { institutions: [] };
@@ -225,9 +224,8 @@
 
         // DESCARGAR DATOS DE LA HOJA DEL USUARIO
         async function fetchFromCloud() {
-            setSyncStatus('syncing', 'Descargando datos del usuario...');
+            setSyncStatus('syncing', 'Descargando datos...');
             try {
-                // Se envía el identificador de usuario por parámetro GET
                 const userParam = encodeURIComponent(usuarioActual.usuario || usuarioActual.nombre);
                 const response = await fetch(`${API_URL}?user=${userParam}&action=get`);
                 const data = await response.json();
@@ -237,34 +235,42 @@
                     const savedKey = `pedagogico_lp_v20_${usuarioActual.usuario || usuarioActual.nombre}`;
                     localStorage.setItem(savedKey, JSON.stringify(appData));
                     refreshCurrentView();
-                    setSyncStatus('success', 'Sincronizado con Google Sheets');
+                    setSyncStatus('success', 'Sincronizado');
                 } else if (data && data.status === "empty") {
-                    setSyncStatus('success', 'Hoja activa (Sin registros)');
+                    setSyncStatus('success', 'Hoja lista');
                 }
             } catch (error) {
-                setSyncStatus('error', 'Modo Local (Sin conexión)');
+                setSyncStatus('error', 'Modo Local');
             }
         }
 
-        // GUARDAR/ESCRIBIR DATOS EN LA HOJA DEL USUARIO
+        // GUARDAR DATOS COMPATIBLE CON GOOGLE APPS SCRIPT
         async function saveToCloud() {
-            setSyncStatus('syncing', 'Guardando en la hoja del usuario...');
+            setSyncStatus('syncing', 'Guardando en la nube...');
             try {
-                const payload = {
-                    user: usuarioActual.usuario || usuarioActual.nombre,
+                const userName = usuarioActual.usuario || usuarioActual.nombre;
+                const payloadStr = JSON.stringify({
+                    user: userName,
                     nombreDocente: usuarioActual.nombre,
                     role: usuarioActual.rol,
                     institutions: appData.institutions
-                };
+                });
+
+                // Enviar como formulario x-www-form-urlencoded asegura la compatibilidad CORS y de lectura en Apps Script
+                const formData = new URLSearchParams();
+                formData.append('data', payloadStr);
+                formData.append('user', userName);
+
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
                 });
+
                 setSyncStatus('success', 'Guardado en Google Sheets');
             } catch (error) {
-                setSyncStatus('error', 'Error al Guardar en Nube');
+                setSyncStatus('error', 'Error al Guardar');
             }
         }
 
