@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso - Sistema Académico LP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen flex items-center justify-center p-6">
+
+    <div class="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white text-2xl shadow-lg">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <h2 id="auth-title" class="text-2xl font-black text-slate-900">Iniciar Sesión</h2>
+            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">SISTEMA ACADÉMICO LP</p>
+        </div>
+
+        <!-- FORMULARIO DE INICIO DE SESIÓN -->
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 ml-2">Usuario</label>
+                <input type="text" id="login-username" required placeholder="Ej. docente_lp" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 ml-2">Contraseña</label>
+                <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <button type="submit" id="btn-login" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:bg-indigo-700 transition-colors">Ingresar</button>
+            <div class="text-center mt-6">
+                <button type="button" onclick="toggleForm('register')" class="text-xs font-bold text-indigo-600 hover:underline">¿Nuevo usuario? Crear cuenta y hoja individual</button>
+            </div>
+        </form>
+
+        <!-- FORMULARIO DE REGISTRO DE USUARIO -->
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 ml-2">Nombre de Usuario</label>
+                <input type="text" id="reg-username" required placeholder="docente_lp" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 ml-2">Contraseña</label>
+                <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 ml-2">Nombre de Pestaña en Google Sheets</label>
+                <input type="text" id="reg-sheetname" required placeholder="Ej: Hoja_Profesor_Leonar" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold text-sm outline-none focus:border-indigo-500">
+            </div>
+            <button type="submit" id="btn-reg" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl hover:bg-emerald-700 transition-colors">Crear Cuenta y Generar Hoja</button>
+            <div class="text-center mt-6">
+                <button type="button" onclick="toggleForm('login')" class="text-xs font-bold text-indigo-600 hover:underline">Volver a Inicio de Sesión</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // PEGA AQUÍ LA URL DESPLEGADA DE TU APPS SCRIPT
+        const API_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+
+        function toggleForm(mode) {
+            if (mode === 'register') {
+                document.getElementById('form-login').classList.add('hidden');
+                document.getElementById('form-register').classList.remove('hidden');
+                document.getElementById('auth-title').innerText = 'Registro y Hoja Individual';
+            } else {
+                document.getElementById('form-register').classList.add('hidden');
+                document.getElementById('form-login').classList.remove('hidden');
+                document.getElementById('auth-title').innerText = 'Iniciar Sesión';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+            const btn = document.getElementById('btn-login');
+
+            btn.innerText = "VERIFICANDO...";
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}?action=login&user=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`);
+                const res = await response.json();
+
+                if (res.success) {
+                    // Guardar los datos de sesión en LocalStorage
+                    localStorage.setItem('pedagogico_user', JSON.stringify({
+                        username: res.username,
+                        role: res.role,
+                        sheetName: res.sheetName
+                    }));
+                    // Redirigir al archivo index.html principal
+                    window.location.href = "index.html";
+                } else {
+                    alert(res.message || "Error al verificar credenciales.");
+                }
+            } catch (err) {
+                alert("Error de conexión con la hoja de cálculo.");
+            } finally {
+                btn.innerText = "INGRESAR";
+                btn.disabled = false;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const sheetName = document.getElementById('reg-sheetname').value.trim().replace(/\s+/g, '_');
+            const btn = document.getElementById('btn-reg');
+
+            btn.innerText = "CREANDO HOJA...";
+            btn.disabled = true;
+
+            try {
+                const payload = { action: 'register', username, password, sheetName };
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload)
+                });
+                const res = await response.json();
+
+                if (res.success) {
+                    localStorage.setItem('pedagogico_user', JSON.stringify({
+                        username: res.username,
+                        role: res.role,
+                        sheetName: res.sheetName
+                    }));
+                    alert(`Usuario "${username}" registrado. Hoja creada: ${sheetName}`);
+                    window.location.href = "index.html";
+                } else {
+                    alert(res.message || "No se pudo completar el registro.");
+                }
+            } catch (err) {
+                alert("Error en el servidor al crear la hoja.");
+            } finally {
+                btn.innerText = "CREAR CUENTA Y GENERAR HOJA";
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
