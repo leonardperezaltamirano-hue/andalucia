@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA ACADÉMICO LP v2.0.0 - Con Autenticación</title>
+    <title>SISTEMA ACADÉMICO LP v2.0.0 - Gestión de Usuarios y Hojas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -14,7 +14,7 @@
         .view-section.active { display: block; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
-        .sidebar-item.active { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+        .sidebar-item.active { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
         .glass-card { background: white; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
         .glass-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #e2e8f0; }
         .score-input { transition: all 0.2s ease; border: 2px solid transparent; }
@@ -26,56 +26,63 @@
 </head>
 <body class="min-h-screen flex flex-col overflow-hidden bg-slate-50/50">
 
-    <!-- PANTALLA DE LOGIN Y REGISTRO DE USUARIOS -->
+    <!-- PANTALLA DE AUTENTICACIÓN / LOGIN Y CREACIÓN DE USUARIOS -->
     <div id="auth-screen" class="fixed inset-0 z-[200] bg-slate-900 flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-md rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-indigo-200">
                     <i class="fas fa-layer-group text-white text-2xl"></i>
                 </div>
-                <h2 id="auth-title" class="text-2xl font-black text-slate-900">Iniciar Sesión</h2>
-                <p id="auth-subtitle" class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">Sistema Académico LP</p>
+                <h2 id="auth-title" class="text-2xl font-black text-slate-900">Acceso al Sistema</h2>
+                <p id="auth-subtitle" class="text-xs text-slate-400 font-bold uppercase tracking-wider mt-1">SISTEMA ACADÉMICO LP v2.0.0</p>
             </div>
 
-            <!-- Formulario de Login -->
+            <!-- FORMULARIO INICIO DE SESIÓN -->
             <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Usuario / Correo</label>
-                    <input type="text" id="login-username" required placeholder="admin" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Rol de Usuario</label>
+                    <select id="login-role" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm text-slate-700">
+                        <option value="profesor">Profesor / Docente</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Usuario</label>
+                    <input type="text" id="login-username" required placeholder="Ej. admin o lperez" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
                 </div>
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Contraseña</label>
                     <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-xl uppercase tracking-widest mt-4 hover:bg-indigo-700 transition-colors">Ingresar al Sistema</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black text-sm shadow-xl uppercase tracking-widest mt-4 hover:bg-indigo-700 transition-colors">Ingresar</button>
                 <div class="text-center mt-6">
-                    <button type="button" onclick="toggleAuthMode('register')" class="text-xs font-bold text-indigo-600 hover:underline">¿No tienes usuario? Crea una cuenta nueva</button>
+                    <button type="button" onclick="toggleAuthMode('register')" class="text-xs font-bold text-indigo-600 hover:underline">¿Nuevo Docente? Crear Usuario u Hoja Individual</button>
                 </div>
             </form>
 
-            <!-- Formulario de Registro -->
+            <!-- FORMULARIO REGISTRO Y CREACIÓN DE HOJA EN GOOGLE SHEETS -->
             <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Nuevo Usuario</label>
-                    <input type="text" id="reg-username" required placeholder="profesor_perez" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Nombre de Usuario</label>
+                    <input type="text" id="reg-username" required placeholder="docente_lp" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
                 </div>
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Contraseña</label>
                     <input type="password" id="reg-password" required placeholder="••••••••" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Nombre del Libro / Hoja en Sheets</label>
-                    <input type="text" id="reg-sheetname" required placeholder="Ej: U.E. Andalucia 2026" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 mb-1 block">Nombre de Hoja Individual (Google Sheets)</label>
+                    <input type="text" id="reg-sheetname" required placeholder="Ej: Hoja_Profesor_Leonar" class="w-full px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl font-bold outline-none text-sm focus:border-indigo-500">
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-sm shadow-xl uppercase tracking-widest mt-4 hover:bg-emerald-700 transition-colors">Registrar Usuario</button>
+                <button type="submit" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-sm shadow-xl uppercase tracking-widest mt-4 hover:bg-emerald-700 transition-colors">Crear Cuenta y Generar Hoja</button>
                 <div class="text-center mt-6">
-                    <button type="button" onclick="toggleAuthMode('login')" class="text-xs font-bold text-indigo-600 hover:underline">¿Ya tienes cuenta? Inicia sesión</button>
+                    <button type="button" onclick="toggleAuthMode('login')" class="text-xs font-bold text-indigo-600 hover:underline">Volver a Inicio de Sesión</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- PANEL PRINCIPAL DE TRABAJO -->
+    <!-- ENTORNO PRINCIPAL DEL SISTEMA -->
     <div id="app-layout" class="flex-1 flex overflow-hidden hidden">
         <aside class="w-72 bg-white border-r border-slate-100 flex flex-col h-screen z-50">
             <div class="p-8">
@@ -88,11 +95,14 @@
                         <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-[0.2em]">Versión 2.0.0</span>
                     </div>
                 </div>
-                <!-- Perfil del Usuario Activo -->
+                <!-- Tarjeta de Información de la Sesión -->
                 <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-6">
-                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Usuario Activo</p>
-                    <p id="user-display-name" class="font-extrabold text-slate-800 text-sm truncate"></p>
-                    <p id="user-display-sheet" class="text-[10px] font-bold text-indigo-600 truncate mt-0.5"></p>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Sesión Activa</p>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span id="user-display-name" class="font-extrabold text-slate-800 text-sm truncate"></span>
+                        <span id="user-display-role" class="text-[9px] font-black px-2 py-0.5 rounded bg-indigo-100 text-indigo-600 uppercase"></span>
+                    </div>
+                    <p id="user-display-sheet" class="text-[10px] font-bold text-emerald-600 truncate mt-1"><i class="fas fa-file-excel mr-1"></i><span></span></p>
                 </div>
                 <div class="relative mb-2">
                     <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fas fa-search text-xs"></i></div>
@@ -119,7 +129,7 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                         <div>
                             <h2 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Mis Instituciones</h2>
-                            <p class="text-slate-500 font-medium">Gestiona tus unidades educativas y registros sincronizados a Google Sheets.</p>
+                            <p class="text-slate-500 font-medium">Gestión de unidades educativas sincronizadas a tu hoja individual.</p>
                         </div>
                         <button onclick="openModal('institution')" class="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-sm shadow-xl flex items-center justify-center gap-3"><i class="fas fa-plus-circle"></i> Nueva Institución</button>
                     </div>
@@ -129,7 +139,7 @@
                 <section id="section-reports" class="view-section">
                     <div class="mb-12">
                         <h2 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Análisis de Rendimiento</h2>
-                        <p class="text-slate-500 font-medium">Estadísticas consolidadas basadas en notas sobre 100 puntos.</p>
+                        <p class="text-slate-500 font-medium">Cuadro centralizado de promedios sobre 100 puntos.</p>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="glass-card rounded-[2.5rem] p-8">
@@ -206,7 +216,7 @@
         </main>
     </div>
 
-    <!-- MODAL PARA REGISTROS -->
+    <!-- MODAL DE REGISTRO / EDICIÓN -->
     <div id="modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
         <div class="bg-white w-full max-w-md rounded-[3rem] p-12 shadow-2xl">
             <h3 id="modal-title" class="text-2xl font-black text-slate-900 text-center mb-8">Nuevo Registro</h3>
@@ -225,14 +235,13 @@
     <input type="file" id="file-import" class="hidden" accept=".json" onchange="processFile(event)">
 
     <script>
-        // ENDPOINT DE APPS SCRIPT VINCULADO
+        // ENLACE APPS SCRIPT
         const API_URL = "https://script.google.com/macros/s/AKfycbx8MLwmGwY4_GIsVIYJ9nU9v5wpn_TTjJW8g886N3xWo1oRFqzJkw-dqrqQqrqT8iXf/exec";
 
         let currentUser = null;
         let appData = { institutions: [] };
         let curInstId = null, curClassId = null, curTrimestre = 1;
 
-        // INICIALIZACIÓN
         window.onload = () => {
             const savedUser = localStorage.getItem('pedagogico_user');
             if (savedUser) {
@@ -241,7 +250,6 @@
             }
         };
 
-        // MANEJO DE SESIONES
         function toggleAuthMode(mode) {
             const formLogin = document.getElementById('form-login');
             const formReg = document.getElementById('form-register');
@@ -249,60 +257,63 @@
             if (mode === 'register') {
                 formLogin.classList.add('hidden');
                 formReg.classList.remove('hidden');
-                title.innerText = 'Crear Cuenta';
+                title.innerText = 'Registro y Creación de Hoja';
             } else {
                 formReg.classList.add('hidden');
                 formLogin.classList.remove('hidden');
-                title.innerText = 'Iniciar Sesión';
+                title.innerText = 'Acceso al Sistema';
             }
         }
 
         async function handleLogin(e) {
             e.preventDefault();
+            const role = document.getElementById('login-role').value;
             const username = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value.trim();
-            
-            setSyncStatus('syncing', 'Autenticando...');
-            
-            // Verificación / Autenticación local o vía Apps Script
+
             let storedUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
             let user = storedUsers.find(u => u.username === username && u.password === pass);
 
-            if (!user) {
-                // Cuenta por defecto de prueba o fallback
-                if(username === 'admin' && pass === '1234') {
-                    user = { username: 'admin', sheetName: 'General_Data' };
-                } else {
-                    alert('Usuario o contraseña incorrectos.');
-                    setSyncStatus('error', 'Error de acceso');
-                    return;
-                }
+            // Permite el ingreso directo como Administrador predeterminado
+            if (!user && role === 'admin' && username === 'admin' && pass === '1234') {
+                user = { username: 'admin', role: 'admin', sheetName: 'Hoja_Admin' };
             }
 
+            if (!user) {
+                alert('Credenciales incorrectas o usuario no registrado.');
+                return;
+            }
+
+            if (!user.role) user.role = role;
             currentUser = user;
             localStorage.setItem('pedagogico_user', JSON.stringify(currentUser));
             startSession();
         }
 
-        function handleRegister(e) {
+        async function handleRegister(e) {
             e.preventDefault();
             const username = document.getElementById('reg-username').value.trim();
             const password = document.getElementById('reg-password').value.trim();
-            const sheetName = document.getElementById('reg-sheetname').value.trim();
+            const sheetName = document.getElementById('reg-sheetname').value.trim().replace(/\s+/g, '_');
 
             let storedUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
             if (storedUsers.some(u => u.username === username)) {
-                alert('El nombre de usuario ya existe.');
+                alert('El usuario ya existe. Por favor elija otro nombre.');
                 return;
             }
 
-            const newUser = { username, password, sheetName };
+            const newUser = { username, password, sheetName, role: 'profesor' };
             storedUsers.push(newUser);
             localStorage.setItem('registered_users', JSON.stringify(storedUsers));
 
             currentUser = newUser;
             localStorage.setItem('pedagogico_user', JSON.stringify(currentUser));
-            alert('Registro exitoso.');
+            
+            // Envía orden a Apps Script para crear la hoja individual del usuario si no existe
+            setSyncStatus('syncing', 'Creando hoja individual en Google Sheets...');
+            await saveToCloud();
+            
+            alert(`Usuario ${username} creado exitosamente con la hoja: ${sheetName}`);
             startSession();
         }
 
@@ -310,9 +321,9 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-layout').classList.remove('hidden');
             document.getElementById('user-display-name').innerText = currentUser.username;
-            document.getElementById('user-display-sheet').innerText = `Hoja: ${currentUser.sheetName || 'Default'}`;
-            
-            // Cargar datos locales asociados al usuario
+            document.getElementById('user-display-role').innerText = currentUser.role || 'profesor';
+            document.getElementById('user-display-sheet').querySelector('span').innerText = currentUser.sheetName || 'Hoja_General';
+
             const localKey = `pedagogico_data_${currentUser.username}`;
             const savedData = localStorage.getItem(localKey);
             if (savedData) {
@@ -332,7 +343,6 @@
             document.getElementById('auth-screen').classList.remove('hidden');
         }
 
-        // PERSISTENCIA Y SINCRONIZACIÓN CON GOOGLE SHEETS
         function saveData() { 
             if (currentUser) {
                 localStorage.setItem(`pedagogico_data_${currentUser.username}`, JSON.stringify(appData)); 
@@ -342,7 +352,7 @@
 
         async function fetchFromCloud() {
             if (!currentUser) return;
-            setSyncStatus('syncing', 'Sincronizando...');
+            setSyncStatus('syncing', 'Descargando datos...');
             try {
                 const response = await fetch(`${API_URL}?user=${encodeURIComponent(currentUser.username)}&sheet=${encodeURIComponent(currentUser.sheetName || '')}`);
                 const data = await response.json();
@@ -359,11 +369,12 @@
 
         async function saveToCloud() {
             if (!currentUser) return;
-            setSyncStatus('syncing', 'Guardando...');
+            setSyncStatus('syncing', 'Guardando en hoja...');
             try {
                 const payload = {
                     user: currentUser.username,
-                    sheetName: currentUser.sheetName || '',
+                    sheetName: currentUser.sheetName || 'Hoja_General',
+                    action: 'saveData',
                     data: appData
                 };
                 await fetch(API_URL, {
@@ -374,7 +385,7 @@
                 });
                 setSyncStatus('success', 'Nube Actualizada');
             } catch (error) {
-                setSyncStatus('error', 'Error al Guardar');
+                setSyncStatus('error', 'Error en almacenamiento');
             }
         }
 
@@ -393,7 +404,6 @@
             if (document.getElementById('section-students').classList.contains('active')) renderStudents();
         }
 
-        // NAVEGACIÓN Y VISTAS
         function showSection(id) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`section-${id}`).classList.add('active');
@@ -467,14 +477,14 @@
                     <div class="flex-1"><div class="font-black text-slate-800 text-sm uppercase">${s.name}</div><div class="text-[9px] text-slate-400 font-bold uppercase">${s.inst} • ${s.cls}</div></div>
                     <div class="text-xl font-black text-emerald-600">${s.avg}</div>
                 </div>
-            `).join('') || '<p class="text-center text-slate-400 font-bold py-10 text-xs">Sin datos</p>';
+            `).join('') || '<p class="text-center text-slate-400 font-bold py-10 text-xs">Sin datos registrados</p>';
             document.getElementById('list-low-students').innerHTML = low.map((s, i) => `
                 <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl">
                     <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center font-black text-rose-500 text-xs shadow-sm">${i+1}</div>
                     <div class="flex-1"><div class="font-black text-slate-800 text-sm uppercase">${s.name}</div><div class="text-[9px] text-slate-400 font-bold uppercase">${s.inst} • ${s.cls}</div></div>
                     <div class="text-xl font-black text-rose-600">${s.avg}</div>
                 </div>
-            `).join('') || '<p class="text-center text-slate-400 font-bold py-10 text-xs">Sin datos</p>';
+            `).join('') || '<p class="text-center text-slate-400 font-bold py-10 text-xs">Sin datos registrados</p>';
         }
 
         function renderInstitutions() {
@@ -490,7 +500,7 @@
                     <h3 class="font-black text-xl text-slate-800 mb-2">${inst.name}</h3>
                     <p class="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">${inst.classrooms ? inst.classrooms.length : 0} CURSOS</p>
                 </div>
-            `).join('') || `<div class="col-span-full py-20 text-center text-slate-300 font-bold uppercase text-xs">No hay instituciones registradas</div>`;
+            `).join('') || `<div class="col-span-full py-20 text-center text-slate-300 font-bold uppercase text-xs">Sin instituciones en esta hoja</div>`;
         }
 
         function openInst(id) { curInstId = id; const inst = appData.institutions.find(i => i.id === id); document.getElementById('title-inst').innerText = inst.name; renderClassrooms(); showSection('classrooms'); }
@@ -508,7 +518,7 @@
                         <button onclick="event.stopPropagation(); deleteItem('class', ${cls.id})" class="text-slate-300 hover:text-rose-500"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-            `).join('') || `<div class="col-span-full text-center py-10 text-slate-300 font-bold text-[10px] uppercase">No hay cursos</div>`;
+            `).join('') || `<div class="col-span-full text-center py-10 text-slate-300 font-bold text-[10px] uppercase">No hay cursos creados</div>`;
         }
 
         function openTrimestres(id) { curClassId = id; const cls = appData.institutions.find(i => i.id === curInstId).classrooms.find(c => c.id === id); document.getElementById('title-class-tr').innerText = cls.name; showSection('trimestres'); }
@@ -554,7 +564,6 @@
             saveData(); renderStudents();
         }
 
-        // CONTROL DE MODALES Y EDICIÓN
         function openModal(type, id = null) {
             const modal = document.getElementById('modal');
             const codeField = document.getElementById('code-field');
@@ -610,8 +619,7 @@
             saveData(); refreshCurrentView();
         }
 
-        // IMPORTAR / EXPORTAR BACKUP JSON
-        function exportJSON() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `BACKUP_${currentUser.username}_${new Date().getTime()}.json`); dl.click(); }
+        function exportJSON() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `BACKUP_${currentUser ? currentUser.username : 'DATA'}_${new Date().getTime()}.json`); dl.click(); }
         function importJSON() { document.getElementById('file-import').click(); }
         function processFile(ev) { const file = ev.target.files[0]; const reader = new FileReader(); reader.onload = (e) => { try { appData = JSON.parse(e.target.result); saveData(); showSection('institutions'); } catch(err) { alert("Archivo JSON inválido"); } }; reader.readAsText(file); }
     </script>
