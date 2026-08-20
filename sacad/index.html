@@ -186,8 +186,8 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // URL DE IMPLEMENTACIÓN ACTUALIZADA
-        const API_URL = "https://script.google.com/macros/s/AKfycbz-9lsU-Vy9nucT0NbC7y7vSEdkec98pnWwHZd8OuEJlzfwavKJR7XjiDVVK9q6ZECcxA/exec";
+        // NUEVA URL DE IMPLEMENTACIÓN DE GOOGLE APPS SCRIPT
+        const API_URL = "https://script.google.com/macros/s/AKfycbzm9OvOomXXDyzQ5nsBl6JttitROvwpIHtYJDfu4QSCAtMFIO4Q1xQiOQt_b0QkrpSh3A/exec";
         
         let appData = { institutions: [] };
         let curInstId = null, curClassId = null, curTrimestre = 1;
@@ -223,13 +223,12 @@
         }
 
         async function fetchFromCloud() {
-            setSyncStatus('syncing', 'Descargando de Sheets...');
+            setSyncStatus('syncing', 'Descargando...');
             try {
                 const userParam = encodeURIComponent(usuarioActual.nombre);
                 const response = await fetch(`${API_URL}?user=${userParam}&action=get`);
                 const data = await response.json();
                 
-                // Si la nube contiene datos, actualizamos el estado de la aplicación local
                 if (data && Array.isArray(data.institutions)) {
                     appData = data;
                     const savedKey = `pedagogico_lp_v20_${usuarioActual.nombre}`;
@@ -237,11 +236,10 @@
                     refreshCurrentView();
                     setSyncStatus('success', 'Sincronizado');
                 } else {
-                    // Si no existen datos en la hoja pero sí localmente, forzamos la primera subida
                     if (appData.institutions && appData.institutions.length > 0) {
                         await saveToCloud();
                     } else {
-                        setSyncStatus('success', 'Hoja lista (sin datos)');
+                        setSyncStatus('success', 'Listo');
                     }
                 }
             } catch (error) {
@@ -251,7 +249,7 @@
         }
 
         async function saveToCloud() {
-            setSyncStatus('syncing', 'Guardando en la nube...');
+            setSyncStatus('syncing', 'Guardando...');
             try {
                 const payload = {
                     nombreDocente: usuarioActual.nombre,
@@ -260,19 +258,21 @@
                     institutions: appData.institutions
                 };
 
-                // Envío en formato JSON plano usando un Blob para garantizar que Apps Script procese e.postData.contents sin bloqueos CORS
-                const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=utf-8' });
+                // Formateo como URLSearchParams para evitar bloqueos por políticas CORS de Google
+                const bodyParams = new URLSearchParams();
+                bodyParams.append('payload', JSON.stringify(payload));
 
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: blob
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: bodyParams
                 });
 
                 setSyncStatus('success', 'Guardado en Google Sheets');
             } catch (error) {
                 console.error("Error al guardar:", error);
-                setSyncStatus('error', 'Error al Guardar');
+                setSyncStatus('error', 'Error al guardar');
             }
         }
 
