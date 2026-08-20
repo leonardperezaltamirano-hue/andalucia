@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA ACADÉMICO PERMIC v2.0.0</title>
+    <title>SISTEMA ACADÉMICO LP v2.0.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -39,7 +39,6 @@
                 </div>
             </div>
 
-            <!-- PERFIL DE USUARIO LOGUEADO -->
             <div class="p-3 bg-slate-50 border border-slate-100 rounded-2xl mb-6 flex items-center justify-between">
                 <div>
                     <p id="userLogueado" class="text-xs font-black text-slate-800 uppercase">Cargando...</p>
@@ -67,11 +66,11 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
+    <!-- PANEL PRINCIPAL -->
     <main class="flex-1 h-screen overflow-y-auto relative flex flex-col bg-slate-50/50">
         <div class="p-8 md:p-12 flex-1 pb-24">
             
-            <!-- SECTION INSTITUCIONES -->
+            <!-- INSTITUCIONES -->
             <section id="section-institutions" class="view-section active">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                     <div>
@@ -83,7 +82,7 @@
                 <div id="grid-institutions" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </section>
 
-            <!-- SECTION REPORTES -->
+            <!-- REPORTES -->
             <section id="section-reports" class="view-section">
                 <div class="mb-12">
                     <h2 class="text-4xl font-black text-slate-900 tracking-tight mb-2">Análisis de Rendimiento</h2>
@@ -101,7 +100,7 @@
                 </div>
             </section>
 
-            <!-- SECTION CURSOS -->
+            <!-- CURSOS -->
             <section id="section-classrooms" class="view-section">
                 <div class="flex items-center gap-6 mb-12">
                     <button onclick="showSection('institutions')" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600"><i class="fas fa-chevron-left"></i></button>
@@ -111,7 +110,7 @@
                 <div id="grid-classrooms" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </section>
 
-            <!-- SECTION TRIMESTRES -->
+            <!-- TRIMESTRES -->
             <section id="section-trimestres" class="view-section">
                 <div class="flex items-center gap-6 mb-12">
                     <button onclick="showSection('classrooms')" class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-chevron-left"></i></button>
@@ -124,7 +123,7 @@
                 </div>
             </section>
 
-            <!-- SECTION PLANILLA DE ESTUDIANTES -->
+            <!-- ESTUDIANTES / PLANILLA -->
             <section id="section-students" class="view-section">
                 <div class="flex flex-col gap-8 mb-8">
                     <div class="flex flex-col md:flex-row md:items-center gap-6">
@@ -157,11 +156,11 @@
             </section>
         </div>
 
-        <!-- FOOTER / SYNC STATUS -->
+        <!-- PIE DE PÁGINA -->
         <footer class="bg-white/80 backdrop-blur-md border-t border-slate-50 py-4 px-12 flex justify-between items-center absolute bottom-0 w-full z-40">
-            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">© 2026 PERMIC SACAD</span>
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">© 2026 LP ACADÉMICO</span>
             <div class="flex items-center gap-3">
-                <button onclick="fetchFromCloud()" title="Forzar Sincronización Completa" class="text-slate-400 hover:text-indigo-600 transition-colors text-xs"><i class="fas fa-sync-alt"></i></button>
+                <button onclick="fetchFromCloud()" title="Sincronizar Datos" class="text-slate-400 hover:text-indigo-600 transition-colors text-xs"><i class="fas fa-sync-alt"></i></button>
                 <div class="flex items-center gap-2"><div id="sync-indicator-dot" class="w-2 h-2 rounded-full bg-emerald-500"></div><span id="sync-indicator-text" class="text-[9px] font-bold text-slate-400 uppercase">Sincronizado</span></div>
             </div>
         </footer>
@@ -185,6 +184,7 @@
 
     <input type="file" id="file-import" class="hidden" accept=".json" onchange="processFile(event)">
 
+    <!-- JAVASCRIPT -->
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbx8MLwmGwY4_GIsVIYJ9nU9v5wpn_TTjJW8g886N3xWo1oRFqzJkw-dqrqQqrqT8iXf/exec";
         
@@ -192,7 +192,6 @@
         let curInstId = null, curClassId = null, curTrimestre = 1;
         let usuarioActual = null;
 
-        // VERIFICACIÓN DE SESIÓN E INICIALIZACIÓN
         window.onload = async () => {
             const sesionGuardada = sessionStorage.getItem('usuarioActual');
             if (!sesionGuardada) {
@@ -204,7 +203,7 @@
             document.getElementById('userLogueado').textContent = usuarioActual.nombre;
             document.getElementById('rolLogueado').textContent = usuarioActual.rol;
 
-            const savedKey = `pedagogico_lp_v20_${usuarioActual.usuario || usuarioActual.nombre}`;
+            const savedKey = `pedagogico_lp_v20_${usuarioActual.nombre}`;
             const saved = localStorage.getItem(savedKey);
             if (saved) { try { appData = JSON.parse(saved); } catch(e){} }
             renderInstitutions();
@@ -217,59 +216,53 @@
         }
 
         function saveData() { 
-            const savedKey = `pedagogico_lp_v20_${usuarioActual.usuario || usuarioActual.nombre}`;
+            const savedKey = `pedagogico_lp_v20_${usuarioActual.nombre}`;
             localStorage.setItem(savedKey, JSON.stringify(appData)); 
             saveToCloud();
         }
 
-        // DESCARGAR DATOS DE LA HOJA DEL USUARIO
         async function fetchFromCloud() {
             setSyncStatus('syncing', 'Descargando datos...');
             try {
-                const userParam = encodeURIComponent(usuarioActual.usuario || usuarioActual.nombre);
+                const userParam = encodeURIComponent(usuarioActual.nombre);
                 const response = await fetch(`${API_URL}?user=${userParam}&action=get`);
                 const data = await response.json();
                 
                 if (data && data.institutions) {
                     appData = data;
-                    const savedKey = `pedagogico_lp_v20_${usuarioActual.usuario || usuarioActual.nombre}`;
+                    const savedKey = `pedagogico_lp_v20_${usuarioActual.nombre}`;
                     localStorage.setItem(savedKey, JSON.stringify(appData));
                     refreshCurrentView();
                     setSyncStatus('success', 'Sincronizado');
-                } else if (data && data.status === "empty") {
+                } else {
                     setSyncStatus('success', 'Hoja lista');
                 }
             } catch (error) {
+                console.error("Error al cargar:", error);
                 setSyncStatus('error', 'Modo Local');
             }
         }
 
-        // GUARDAR DATOS COMPATIBLE CON GOOGLE APPS SCRIPT
         async function saveToCloud() {
             setSyncStatus('syncing', 'Guardando en la nube...');
             try {
-                const userName = usuarioActual.usuario || usuarioActual.nombre;
-                const payloadStr = JSON.stringify({
-                    user: userName,
+                const payload = {
                     nombreDocente: usuarioActual.nombre,
+                    user: usuarioActual.usuario || usuarioActual.nombre,
                     role: usuarioActual.rol,
                     institutions: appData.institutions
-                });
-
-                // Enviar como formulario x-www-form-urlencoded asegura la compatibilidad CORS y de lectura en Apps Script
-                const formData = new URLSearchParams();
-                formData.append('data', payloadStr);
-                formData.append('user', userName);
+                };
 
                 await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
                 });
 
                 setSyncStatus('success', 'Guardado en Google Sheets');
             } catch (error) {
+                console.error("Error al guardar:", error);
                 setSyncStatus('error', 'Error al Guardar');
             }
         }
@@ -504,7 +497,7 @@
             saveData(); refreshCurrentView();
         }
 
-        function exportJSON() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `BACKUP_${usuarioActual.usuario || 'USER'}_${new Date().getTime()}.json`); dl.click(); }
+        function exportJSON() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `BACKUP_${usuarioActual.nombre}_${new Date().getTime()}.json`); dl.click(); }
         function importJSON() { document.getElementById('file-import').click(); }
         function processFile(ev) { const file = ev.target.files[0]; const reader = new FileReader(); reader.onload = (e) => { try { appData = JSON.parse(e.target.result); saveData(); showSection('institutions'); } catch(err) { alert("Archivo inválido"); } }; reader.readAsText(file); }
     </script>
